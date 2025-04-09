@@ -11,7 +11,7 @@ export default function ProductsPage() {
                 <h1 className="text-3xl font-bold">Produtos</h1>
                 <div className="flex gap-3">
                     <NewCategoryModal />
-                    <Link href="/new">
+                    <Link href="/products/new">
                         <Button>
                             <Plus className="mr-2 h-4 w-4" />
                             Novo Produto

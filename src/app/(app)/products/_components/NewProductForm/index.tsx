@@ -9,19 +9,26 @@ import { useCategories } from "@/hooks/useCategories"
 import { newProductSchema } from "@/schemas/new-product"
 import { productService } from "@/services/product"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import { z } from "zod"
 
 type NewProductFormData = z.infer<typeof newProductSchema>
-export default function NewProductForm() {
+
+interface NewProductFormProps {
+  id?: string
+  defaultValues?: NewProductFormData
+}
+
+export default function NewProductForm({ id, defaultValues }: NewProductFormProps) {
   const router = useRouter()
   const { categories, isLoading: isCategoriesLoading, invalidateCategories } = useCategories()
 
   const { register, handleSubmit, formState: { errors, isSubmitting }, setValue, watch } = useForm<NewProductFormData>({
     resolver: zodResolver(newProductSchema),
-    defaultValues: {
+    defaultValues: defaultValues || {
       name: "",
       price: undefined,
       categoryId: "",
@@ -29,18 +36,42 @@ export default function NewProductForm() {
     },
   })
 
-  const imageValue = watch("image") || ""
+  const isEditing = !!defaultValues
 
-  async function onSubmit(values: NewProductFormData) {
-    try {
-      await productService.createProduct(values)
-
-      router.push("/")
+  const { mutate: createProduct, isPending: isCreating } = useMutation({
+    mutationFn: (values: NewProductFormData) => productService.createProduct(values),
+    onSuccess: () => {
+      toast.success("Produto criado com sucesso")
+      router.push("/products")
       invalidateCategories()
-    } catch (error) {
+    },
+    onError: () => {
       toast.error("Erro ao criar produto")
     }
+  })
+
+  const { mutate: updateProduct, isPending: isUpdating } = useMutation({
+    mutationFn: (values: NewProductFormData) => productService.updateProduct(id!, values),
+    onSuccess: () => {
+      toast.success("Produto atualizado com sucesso")
+      router.push("/products")
+      invalidateCategories()
+    },
+    onError: () => {
+      toast.error("Erro ao atualizar produto")
+    }
+  })
+
+  async function onSubmit(values: NewProductFormData) {
+    if (isEditing && id) {
+      updateProduct(values)
+    } else {
+      createProduct(values)
+    }
   }
+
+  const imageValue = watch("image") || ""
+  const isLoading = isSubmitting || isCreating || isUpdating
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -105,8 +136,8 @@ export default function NewProductForm() {
         )}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isSubmitting} isLoading={isSubmitting}>
-        Criar Produto
+      <Button type="submit" className="w-full" disabled={isLoading} isLoading={isLoading}>
+        {isEditing ? "Editar Produto" : "Criar Produto"}
       </Button>
     </form>
   )

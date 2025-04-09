@@ -3,11 +3,21 @@
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useCategories } from "@/hooks/useCategories"
+import { useCallback } from "react"
+import { toast } from "react-hot-toast"
 import ProductCard from "../ProductCard"
 import ProductListSkeleton from "../ProductListSkeleton"
 
 export default function ProductList() {
-    const { categories, isLoading } = useCategories()
+    const { categories, isLoading, error, invalidateCategories } = useCategories()
+
+    const handleProductDelete = useCallback(() => {
+        invalidateCategories()
+    }, [invalidateCategories])
+
+    if (error) {
+        toast.error('Erro ao carregar os produtos')
+    }
 
     if (isLoading) {
         return (
@@ -29,9 +39,13 @@ export default function ProductList() {
                         {!category.products || category.products.length === 0 ? (
                             <p className="text-neutral-500 text-center py-8">Nenhum produto nesta categoria</p>
                         ) : (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            <div className="flex flex-wrap gap-6">
                                 {category.products.map((product) => (
-                                    <ProductCard key={product.id} product={product} />
+                                    <ProductCard
+                                        key={product.id}
+                                        product={product}
+                                        onDelete={handleProductDelete}
+                                    />
                                 ))}
                             </div>
                         )}

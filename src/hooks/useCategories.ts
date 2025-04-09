@@ -11,7 +11,6 @@ export const useCategories = () => {
     } = useQuery({
         queryKey: ['categories'],
         queryFn: categoriesService.getAllCategories,
-        staleTime: 20,
     })
 
     const createCategory = useMutation({
