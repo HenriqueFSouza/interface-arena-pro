@@ -2,14 +2,14 @@
 
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useCategories } from "@/hooks/useCategories"
+import { useCategoryProducts } from "@/hooks/useCategories"
 import { useCallback } from "react"
 import { toast } from "react-hot-toast"
 import ProductCard from "../ProductCard"
 import ProductListSkeleton from "../ProductListSkeleton"
 
 export default function ProductList() {
-    const { categories, isLoading, error, invalidateCategories } = useCategories()
+    const { categories, isLoading, error, invalidateCategories } = useCategoryProducts()
 
     const handleProductDelete = useCallback(() => {
         invalidateCategories()
@@ -42,9 +42,11 @@ export default function ProductList() {
                             <div className="flex flex-wrap gap-6">
                                 {category.products.map((product) => (
                                     <ProductCard
+                                        className="w-32"
                                         key={product.id}
                                         product={product}
                                         onDelete={handleProductDelete}
+                                        isEditable={true}
                                     />
                                 ))}
                             </div>

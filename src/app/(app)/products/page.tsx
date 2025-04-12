@@ -1,8 +1,8 @@
+import NewCategoryModal from "@/components/Product/NewCategoryModal"
+import ProductList from "@/components/Product/ProductList"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import Link from "next/link"
-import NewCategoryModal from "./_components/NewCategoryModal"
-import ProductList from "./_components/ProductList"
 
 export default function ProductsPage() {
     return (

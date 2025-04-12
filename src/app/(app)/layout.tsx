@@ -20,7 +20,7 @@ export default function AppLayout({
 
                 {/* Área de conteúdo */}
                 <main className="flex-1 pr-4 pb-4">
-                    <div className="min-h-full mx-auto bg-gray-100 rounded-t-lg lg:rounded-lg border shadow-sm p-4">
+                    <div className="relative overflow-hidden min-h-full mx-auto bg-gray-100 rounded-t-lg lg:rounded-lg border shadow-sm p-4">
                         {children}
                     </div>
                 </main>
