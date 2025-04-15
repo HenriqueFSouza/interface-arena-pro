@@ -4,6 +4,7 @@ import type { Order } from "@/@types/order"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useSalesStore } from "@/lib/sales-store"
 import { formatToBRL } from "@/utils/currency-formaters"
+import PaymentDialog from "../PaymentDialog"
 
 interface ClientOrderCardProps {
   order: Order
@@ -22,19 +23,21 @@ export default function ClientOrderCard({ order }: ClientOrderCardProps) {
   const totalItems = order.items.reduce((acc, item) => acc + item.quantity, 0)
 
   return (
-    <Card className="cursor-pointer hover:border-primary transition-colors" onClick={handleClick}>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg">{order.clients[0].name}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex justify-between items-center">
-          <div className="text-sm text-muted-foreground">Valor total</div>
-          <div className="text-xl font-bold">{formatToBRL(totalPrice)}</div>
-        </div>
-        <div className="mt-2 text-sm text-muted-foreground">
-          {totalItems} {totalItems === 1 ? "item" : "items"}
-        </div>
-      </CardContent>
+    <Card className="relative cursor-pointer hover:border-primary transition-colors">
+      <PaymentDialog order={order} />
+      <div onClick={handleClick}>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg">{order.clients[0].name}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex justify-between items-center">
+            <div className="text-sm text-muted-foreground">Valor total</div>
+            <div className="text-xl font-bold">{formatToBRL(totalPrice)}</div>
+          </div>
+          <div className="mt-2 text-sm text-muted-foreground">
+            {totalItems} {totalItems === 1 ? "item" : "items"}
+          </div>
+        </CardContent></div>
     </Card>
   )
 }

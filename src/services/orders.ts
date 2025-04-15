@@ -1,4 +1,4 @@
-import { Order, OrderItem } from '@/@types/order';
+import { Order, OrderItem, OrderStatus } from '@/@types/order';
 import { api } from '@/lib/api';
 export interface CreateOrderRequest {
     clientInfo: {
@@ -25,6 +25,13 @@ export const ordersService = {
     async addOrderItem(orderId: string, items: Omit<OrderItem, 'id' | 'product'>[]): Promise<OrderItem[]> {
         const response = await api.post(`/orders/${orderId}/items`, {
             items
+        })
+        return response.data
+    },
+
+    async closeOrder(orderId: string): Promise<void> {
+        const response = await api.put(`/orders/${orderId}/status`, {
+            status: OrderStatus.CLOSED
         })
         return response.data
     }

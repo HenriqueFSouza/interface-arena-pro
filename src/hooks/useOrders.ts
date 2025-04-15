@@ -18,8 +18,14 @@ export const useOrders = () => {
         mutationFn: ordersService.createOrder,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['orders'] })
+            refetch()
+            toast.success('Comanda criada com sucesso')
+        },
+        onError: () => {
+            toast.error('Erro ao criar comanda')
         }
     })
+
     const addOrderItem = useMutation({
         mutationFn: (params: { orderId: string, items: Omit<OrderItem, 'id' | 'product'>[] }) =>
             ordersService.addOrderItem(params.orderId, params.items),
@@ -33,12 +39,25 @@ export const useOrders = () => {
         }
     })
 
+    const closeOrder = useMutation({
+        mutationFn: ordersService.closeOrder,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['orders'] })
+            refetch()
+            toast.success('Comanda finalizada com sucesso')
+        },
+        onError: () => {
+            toast.error('Erro ao finalizar comanda')
+        }
+    })
+
     return {
         orders: data ?? [],
         isLoading,
-        isPending: createOrder.isPending || addOrderItem.isPending,
+        isPending: createOrder.isPending || addOrderItem.isPending || closeOrder.isPending,
         createOrder: createOrder.mutate,
         addOrderItem: addOrderItem.mutate,
+        closeOrder: closeOrder.mutate,
         error,
     }
 }

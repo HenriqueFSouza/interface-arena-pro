@@ -12,25 +12,22 @@ import {
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
+import { useOrders } from "@/hooks/useOrders"
 import { useSalesStore } from "@/lib/sales-store"
 import { newOrderSchema, type NewOrderFormData } from "@/schemas/new-order"
-import { ordersService } from "@/services/orders"
 import { formatToBRL } from "@/utils/currency-formaters"
 import { formatPhoneNumber } from "@/utils/format-phone"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Minus, Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { toast } from "react-hot-toast"
 import CategoryFilter from "../CategoryFilter"
 import OrderProductsList from "../OrderProductsList"
-
 export default function NewOrderDialog() {
     const [open, setOpen] = useState(false)
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-    const queryClient = useQueryClient()
     const { cartItems, removeFromCart, increaseQuantity, decreaseQuantity, getTotalPrice, clearCart } = useSalesStore()
+    const { isPending, createOrder } = useOrders()
 
     const {
         register,
@@ -54,33 +51,22 @@ export default function NewOrderDialog() {
         setValue("phone", formatted)
     }
 
-    const createOrderMutation = useMutation({
-        mutationFn: ordersService.createOrder,
-        onSuccess: () => {
-            toast.success("Comanda criada com sucesso")
-            reset()
-            clearCart() // Clear the cart after successful order creation
-            setOpen(false)
-            queryClient.invalidateQueries({ queryKey: ['orders'] })
-        },
-        onError: () => {
-            toast.error("Erro ao criar comanda")
-        }
-    })
-
     const onSubmit = async (data: NewOrderFormData) => {
         const items = cartItems.map(item => ({
             productId: item.product.id,
             quantity: item.quantity
         }))
 
-        createOrderMutation.mutate({
+        createOrder({
             clientInfo: {
                 name: data.name,
                 phone: data.phone
             },
             items
         })
+        reset()
+        clearCart()
+        setOpen(false)
     }
 
     return (
@@ -232,9 +218,9 @@ export default function NewOrderDialog() {
                                 <Button
                                     onClick={handleSubmit(onSubmit)}
                                     className="w-full"
-                                    disabled={createOrderMutation.isPending}
+                                    disabled={isPending}
                                 >
-                                    {createOrderMutation.isPending ? "Criando..." : "Criar comanda"}
+                                    {isPending ? "Criando..." : "Criar comanda"}
                                 </Button>
                             </div>
                         </div>
