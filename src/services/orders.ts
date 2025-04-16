@@ -34,5 +34,10 @@ export const ordersService = {
             status: OrderStatus.CLOSED
         })
         return response.data
+    },
+
+    async deleteOrder(orderId: string): Promise<void> {
+        const response = await api.delete(`/orders/${orderId}`)
+        return response.data
     }
 } 

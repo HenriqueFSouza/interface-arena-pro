@@ -51,13 +51,26 @@ export const useOrders = () => {
         }
     })
 
+    const deleteOrder = useMutation({
+        mutationFn: ordersService.deleteOrder,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['orders'] })
+            refetch()
+            toast.success('Comanda excluída com sucesso')
+        },
+        onError: () => {
+            toast.error('Erro ao excluir comanda')
+        }
+    })
+
     return {
         orders: data ?? [],
         isLoading,
-        isPending: createOrder.isPending || addOrderItem.isPending || closeOrder.isPending,
+        isPending: createOrder.isPending || addOrderItem.isPending || closeOrder.isPending || deleteOrder.isPending,
         createOrder: createOrder.mutate,
         addOrderItem: addOrderItem.mutate,
         closeOrder: closeOrder.mutate,
+        deleteOrder: deleteOrder.mutate,
         error,
     }
 }

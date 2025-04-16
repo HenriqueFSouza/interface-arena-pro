@@ -7,6 +7,7 @@ import { useOrders } from "@/hooks/useOrders"
 import { useSalesStore } from "@/lib/sales-store"
 import { formatToBRL } from "@/utils/currency-formaters"
 import { Minus, Plus, Trash2, X } from "lucide-react"
+import DeleteOrderDialog from "../DeleteOrderDialog"
 
 export default function CartSummary() {
   const {
@@ -127,6 +128,11 @@ export default function CartSummary() {
         <Button className="w-full" size="lg" disabled={cartItems.length === 0} onClick={handleMakeOrder} isLoading={isPending}>
           Fazer pedido
         </Button>
+        <DeleteOrderDialog
+          orderId={selectedClient.orderId}
+          clientName={selectedClient.name}
+          onSuccess={handleCloseOverlay}
+        />
       </div>
     </div>
   )
