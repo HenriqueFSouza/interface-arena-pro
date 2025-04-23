@@ -1,11 +1,11 @@
 "use client"
 
 import type { Order } from "@/@types/order"
+import PrintOrder from "@/components/Print"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useSalesStore } from "@/lib/sales-store"
 import { formatToBRL } from "@/utils/currency-formaters"
 import PaymentDialog from "../PaymentDialog"
-
 interface ClientOrderCardProps {
   order: Order
 }
@@ -24,6 +24,12 @@ export default function ClientOrderCard({ order }: ClientOrderCardProps) {
 
   return (
     <Card className="relative cursor-pointer hover:border-primary transition-colors">
+      <PrintOrder
+        showButton
+        order={order}
+        size="sm"
+        variant="ghost"
+      />
       <PaymentDialog order={order} />
       <div onClick={handleClick}>
         <CardHeader className="pb-2">

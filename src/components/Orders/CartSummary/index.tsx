@@ -1,5 +1,7 @@
 "use client"
 
+import { usePrintItem } from "@/components/Print"
+import Receipt from "@/components/Print/receipt"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
@@ -13,6 +15,7 @@ export default function CartSummary() {
   const {
     selectedClient,
     cartItems,
+    newCartItems,
     increaseQuantity,
     decreaseQuantity,
     removeFromCart,
@@ -22,7 +25,8 @@ export default function CartSummary() {
     setSelectedClient,
   } = useSalesStore()
 
-  if (!selectedClient) return null
+  const { orders, addOrderItem, isPending } = useOrders()
+  const { printItem, printItemRef } = usePrintItem()
 
   const handleCloseOverlay = () => {
     setIsOverlayOpen(false)
@@ -30,9 +34,11 @@ export default function CartSummary() {
     clearCart()
   }
 
-  const { addOrderItem, isPending } = useOrders()
+  if (!selectedClient) return null
 
-  const handleMakeOrder = () => {
+  const order = orders.find((order) => order.id === selectedClient.orderId)
+
+  const handleMakeOrder = async () => {
     try {
       addOrderItem({
         orderId: selectedClient.orderId,
@@ -42,7 +48,13 @@ export default function CartSummary() {
           orderClientId: selectedClient.id,
         }))
       })
+
       handleCloseOverlay()
+
+      // Print after closing
+      if (order) {
+        printItem()
+      }
     } catch (error) {
       console.error(error)
     }
@@ -133,6 +145,10 @@ export default function CartSummary() {
           clientName={selectedClient.name}
           onSuccess={handleCloseOverlay}
         />
+      </div>
+
+      <div className="hidden">
+        <Receipt ref={printItemRef} order={order!} newItems={newCartItems} />
       </div>
     </div>
   )

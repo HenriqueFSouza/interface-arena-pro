@@ -5,7 +5,7 @@ import { OrderItem } from "@/@types/order"
 import { Product } from "@/@types/product"
 import { create } from "zustand"
 
-interface CartItem {
+export interface CartItem {
   product: Product
   quantity: number
 }
@@ -21,6 +21,7 @@ interface SalesStore {
   setSelectedCategory: (category: string | null) => void
 
   cartItems: CartItem[]
+  newCartItems: CartItem[]
   addToCart: (product: Product) => void
   initializeCart: (items: OrderItem[]) => void
   increaseQuantity: (productId: string) => void
@@ -41,8 +42,9 @@ export const useSalesStore = create<SalesStore>((set, get) => ({
   setSelectedCategory: (category) => set({ selectedCategory: category }),
 
   cartItems: [],
+  newCartItems: [],
   addToCart: (product) => {
-    const { cartItems } = get()
+    const { cartItems, newCartItems } = get()
     const existingItem = cartItems.find((item) => item.product.id === product.id)
 
     if (existingItem) {
@@ -50,16 +52,20 @@ export const useSalesStore = create<SalesStore>((set, get) => ({
         cartItems: cartItems.map((item) =>
           item.product.id === product.id ? { ...item, quantity: item.quantity + 1 } : item,
         ),
+        newCartItems: [...newCartItems, { product, quantity: 1 }],
       })
     } else {
-      set({ cartItems: [...cartItems, { product, quantity: 1 }] })
+      set({ cartItems: [...cartItems, { product, quantity: 1 }], newCartItems: [...newCartItems, { product, quantity: 1 }] })
     }
   },
 
   increaseQuantity: (productId) => {
-    const { cartItems } = get()
+    const { cartItems, newCartItems } = get()
     set({
       cartItems: cartItems.map((item) =>
+        item.product.id === productId ? { ...item, quantity: item.quantity + 1 } : item,
+      ),
+      newCartItems: newCartItems.map((item) =>
         item.product.id === productId ? { ...item, quantity: item.quantity + 1 } : item,
       ),
     })
@@ -82,7 +88,7 @@ export const useSalesStore = create<SalesStore>((set, get) => ({
   },
 
   clearCart: () => {
-    set({ cartItems: [] })
+    set({ cartItems: [], newCartItems: [] })
   },
 
   initializeCart: (items: OrderItem[]) => {
