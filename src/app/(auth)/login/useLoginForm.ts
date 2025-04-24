@@ -21,7 +21,7 @@ export const useLoginForm = () => {
   const { mutate: login, isPending: isLoading } = useMutation({
     mutationFn: authService.login,
     onSuccess: () => {
-      router.push('/')
+      return router.push('/')
     },
     onError: (error) => {
       if (error instanceof AxiosError) {

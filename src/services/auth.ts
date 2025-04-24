@@ -14,7 +14,8 @@ interface User {
 
 export const authService = {
   async login(credentials: LoginCredentials) {
-    await api.post('/auth/login', credentials)
+    const response = await api.post('/auth/login', credentials)
+    return response
   },
 
   async logout() {
