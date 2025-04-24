@@ -17,15 +17,18 @@ const Receipt = React.forwardRef(({
     showFooter = true
 }: ReceiptProps, ref: React.Ref<HTMLDivElement>) => {
 
-    const totalPrice = order
-        ? order.items.reduce((acc, item) => acc + item.product.price * item.quantity, 0)
-        : newItems?.reduce((acc, item) => acc + item.product.price * item.quantity, 0) || 0;
+    console.log({ order, newItems })
 
-    const totalItems = order
-        ? order.items.reduce((acc, item) => acc + item.quantity, 0)
-        : newItems?.reduce((acc, item) => acc + item.quantity, 0) || 0;
+    const totalPrice = newItems
+        ? newItems.reduce((acc, item) => acc + item.product.price * item.quantity, 0)
+        : order.items.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
 
-    const currentDate = new Date().toLocaleString('pt-BR');
+    const totalItems = newItems
+        ? newItems.reduce((acc, item) => acc + item.quantity, 0)
+        : order.items.reduce((acc, item) => acc + item.quantity, 0);
+
+    const currentDateWithoutTime = new Date().toLocaleDateString('pt-BR');
+    const currentTime = new Date().toLocaleTimeString('pt-BR');
 
     // Determine which items to render
     const itemsToRender = newItems ? [...newItems] : order.items;
@@ -35,14 +38,17 @@ const Receipt = React.forwardRef(({
             {showHeader && (
                 <div className="text-center mb-2.5">
                     <h1 className="text-2xl font-bold text-primary">ARENA PRO</h1>
-                    <p className="text-[11px] my-0.5">{currentDate}</p>
+                    <p className="text-sm font-bold my-1.5">Pedido #{order?.id.slice(-6)}</p>
                     {order?.clients.length > 0 && (
-                        <div className="my-2 text-[11px]">
+                        <div className="flex justify-between my-2 text-xs">
                             <p className="my-0.5">Cliente: {order.clients[0].name}</p>
                             <p className="my-0.5">Tel: {order.clients[0].phone}</p>
                         </div>
                     )}
-                    <p className="font-bold my-1.5">Pedido #{order?.id.slice(-6)}</p>
+                    <div className="flex justify-between my-2 text-xs">
+                        <p className="my-0.5">{currentDateWithoutTime} </p>
+                        <p className="my-0.5">{currentTime} </p>
+                    </div>
                     <div className="border-t border-dashed border-black my-1.5"></div>
                 </div>
             )}
@@ -67,13 +73,13 @@ const Receipt = React.forwardRef(({
                 <>
                     <div className="border-t border-dashed border-black my-1.5"></div>
                     <div className="my-2.5">
-                        <div className="flex justify-between font-bold text-sm my-1.5">
+                        <div className="flex justify-between font-bold text-xs my-1.5">
                             <span>TOTAL</span>
                             <span>{formatToBRL(totalPrice)}</span>
                         </div>
-                        <p className="text-right text-[11px] my-1.5">{totalItems} {totalItems === 1 ? "item" : "itens"}</p>
+                        <p className="text-right text-xs my-1.5">{totalItems} {totalItems === 1 ? "item" : "itens"}</p>
                     </div>
-                    <div className="text-center mt-4 text-[11px]">
+                    <div className="text-center mt-4 text-xs">
                         <p>Obrigado pela preferência!</p>
                     </div>
                 </>

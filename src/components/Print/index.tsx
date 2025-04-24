@@ -3,6 +3,7 @@
 import { Order } from '@/@types/order';
 import { Button } from '@/components/ui/button';
 import { CartItem } from '@/lib/sales-store';
+import { hasThermalPrinter } from '@/utils/printerUtils';
 import { Printer } from 'lucide-react';
 import { useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
@@ -29,20 +30,31 @@ const PrintOrder = ({
 
   const handlePrint = useReactToPrint({
     documentTitle: newItems ? `Item-${newItems[0].product.name}` : `Pedido-${order.id}`,
-    onAfterPrint: () => console.log('Printed successfully'),
+    onAfterPrint: () => {
+      console.log('Printed successfully')
+    },
     bodyClass: 'print-receipt',
     contentRef: componentRef,
   });
+
+  const printWithThermalCheck = async () => {
+    const hasThermal = await hasThermalPrinter();
+    if (hasThermal) {
+      handlePrint();
+    } else {
+      console.log('No thermal printer detected, skipping print');
+    }
+  };
 
   return (
     <>
       {showButton && (
         <Button
           type="button"
-          onClick={() => handlePrint()}
+          onClick={() => printWithThermalCheck()}
           size={size}
           variant={variant}
-          className="gap-2"
+          className="gap-2 absolute top-2 right-24"
         >
           <Printer className="h-4 w-4" />
           {buttonLabel}
@@ -71,12 +83,19 @@ export const usePrintItem = () => {
     documentTitle: 'Receipt',
     bodyClass: 'print-receipt',
     contentRef: printItemRef,
-    onAfterPrint: () => console.log('Printed successfully'),
+    onAfterPrint: () => {
+      console.log('Printed successfully')
+    },
   });
 
-  const printItem = () => {
+  const printItem = async () => {
     if (printItemRef.current) {
-      handlePrint();
+      const hasThermal = await hasThermalPrinter();
+      if (hasThermal) {
+        handlePrint();
+      } else {
+        console.log('No thermal printer detected, skipping print');
+      }
     }
   };
 

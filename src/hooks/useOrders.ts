@@ -8,11 +8,10 @@ import { toast } from "react-hot-toast"
 export const useOrders = () => {
     const queryClient = useQueryClient()
 
-    const { data, isLoading, error, refetch } = useQuery({
+    const { data, isLoading, isFetching, error, refetch } = useQuery({
         queryKey: ['orders'],
         queryFn: () => ordersService.getOrders(),
     })
-
 
     const createOrder = useMutation({
         mutationFn: ordersService.createOrder,
@@ -65,7 +64,7 @@ export const useOrders = () => {
 
     return {
         orders: data ?? [],
-        isLoading,
+        isLoading: isLoading || isFetching,
         isPending: createOrder.isPending || addOrderItem.isPending || closeOrder.isPending || deleteOrder.isPending,
         createOrder: createOrder.mutate,
         addOrderItem: addOrderItem.mutate,
