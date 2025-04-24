@@ -1,3 +1,12 @@
+export const formatToBRL = (value: string | number) => {
+    if (!value) return 'R$ 0,00'
+
+    return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    }).format(Number(value))
+}
+
 export function formatPhoneNumber(value: string): string {
     // Remove all non-digit characters
     const digits = value.replace(/\D/g, '')
@@ -11,4 +20,12 @@ export function formatPhoneNumber(value: string): string {
             return `(${g1}) ${g2}-${g3}`
         })
         .slice(0, 15) // Max length of (00) 00000-0000
-} 
+}
+
+export function parseFileName(filename: string): string {
+    const [name, extension] = filename.toLowerCase().split('.')
+    const lowerCaseName = name.split(' ').join('-')
+    return `${lowerCaseName}.${extension}`
+}
+
+

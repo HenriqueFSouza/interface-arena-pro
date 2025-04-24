@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { useOrders } from "@/hooks/useOrders"
 import { useSalesStore } from "@/lib/sales-store"
-import { formatToBRL } from "@/utils/currency-formaters"
+import { formatToBRL } from "@/utils/formaters"
 import { Minus, Plus, Trash2, X } from "lucide-react"
 import DeleteOrderDialog from "../DeleteOrderDialog"
 
