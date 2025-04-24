@@ -8,9 +8,12 @@ import UploadInput from "@/components/UploadInput"
 import { useCategories } from "@/hooks/useCategories"
 import { newProductSchema } from "@/schemas/new-product"
 import { productService } from "@/services/product"
+import { uploadService } from "@/services/upload"
+import { parseFileName } from "@/utils/formaters"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import { z } from "zod"
@@ -25,6 +28,8 @@ interface NewProductFormProps {
 export default function NewProductForm({ id, defaultValues }: NewProductFormProps) {
   const router = useRouter()
   const { categories, isLoading: isCategoriesLoading, invalidateCategories } = useCategories()
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
 
   const { register, handleSubmit, formState: { errors, isSubmitting }, setValue, watch } = useForm<NewProductFormData>({
     resolver: zodResolver(newProductSchema),
@@ -32,14 +37,47 @@ export default function NewProductForm({ id, defaultValues }: NewProductFormProp
       name: "",
       price: undefined,
       categoryId: "",
-      image: "",
+      imageUrl: "",
     },
   })
 
   const isEditing = !!defaultValues
 
+  // Function to handle file upload
+  const handleFileUpload = async (values: NewProductFormData): Promise<NewProductFormData> => {
+    if (!selectedFile) return values;
+
+    setIsUploading(true);
+    try {
+      // Generate safe filename
+      const filename = parseFileName(selectedFile.name)
+
+      // Get presigned URL
+      const { url, publicUrl } = await uploadService.getPresignedUrl(filename);
+
+      // Upload file to S3
+      await uploadService.uploadToS3(url, selectedFile);
+
+      // Return updated product data with public URL
+      return {
+        ...values,
+        imageUrl: publicUrl
+      };
+    } catch (error) {
+      console.error('File upload error:', error);
+      toast.error("Erro ao fazer upload da imagem");
+      throw error;
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const { mutate: createProduct, isPending: isCreating } = useMutation({
-    mutationFn: (values: NewProductFormData) => productService.createProduct(values),
+    mutationFn: async (values: NewProductFormData) => {
+      // Handle file upload if needed
+      const updatedValues = await handleFileUpload(values);
+      return productService.createProduct(updatedValues);
+    },
     onSuccess: () => {
       toast.success("Produto criado com sucesso")
       router.push("/products")
@@ -51,7 +89,11 @@ export default function NewProductForm({ id, defaultValues }: NewProductFormProp
   })
 
   const { mutate: updateProduct, isPending: isUpdating } = useMutation({
-    mutationFn: (values: NewProductFormData) => productService.updateProduct(id!, values),
+    mutationFn: async (values: NewProductFormData) => {
+      // Handle file upload if needed
+      const updatedValues = await handleFileUpload(values);
+      return productService.updateProduct(id!, updatedValues);
+    },
     onSuccess: () => {
       toast.success("Produto atualizado com sucesso")
       router.push("/products")
@@ -70,8 +112,8 @@ export default function NewProductForm({ id, defaultValues }: NewProductFormProp
     }
   }
 
-  const imageValue = watch("image") || ""
-  const isLoading = isSubmitting || isCreating || isUpdating
+  const imageValue = watch("imageUrl") || ""
+  const isLoading = isSubmitting || isCreating || isUpdating || isUploading
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -128,11 +170,14 @@ export default function NewProductForm({ id, defaultValues }: NewProductFormProp
         </label>
         <UploadInput
           value={imageValue}
-          onChange={(value) => setValue("image", value)}
-          onRemove={() => setValue("image", "")}
+          onChange={(value) => setValue("imageUrl", value)}
+          onRemove={() => setValue("imageUrl", "")}
+          onFileSelect={setSelectedFile}
+          disabled={isLoading}
+          loading={isUploading}
         />
-        {errors.image?.message && (
-          <p className="text-red-500 text-sm">{errors.image.message}</p>
+        {errors.imageUrl?.message && (
+          <p className="text-red-500 text-sm">{errors.imageUrl.message}</p>
         )}
       </div>
 

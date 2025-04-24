@@ -25,7 +25,7 @@ import { Separator } from "@/components/ui/separator";
 import { useOrders } from "@/hooks/useOrders";
 import { usePayments } from "@/hooks/usePayments";
 import { CreatePaymentRequest, PaymentMethod } from "@/services/payments";
-import { formatToBRL } from "@/utils/currency-formaters";
+import { formatToBRL } from "@/utils/formaters";
 import { getPaymentMethodIcon, getPaymentMethodLabel } from "@/utils/payments";
 import { Banknote, CreditCard, QrCode, Trash2, Wallet } from "lucide-react";
 import { useMemo, useState } from "react";

@@ -1,6 +1,6 @@
 import { Order } from '@/@types/order';
 import { CartItem } from '@/lib/sales-store';
-import { formatToBRL } from '@/utils/currency-formaters';
+import { formatToBRL } from '@/utils/formaters';
 import React from 'react';
 
 interface ReceiptProps {

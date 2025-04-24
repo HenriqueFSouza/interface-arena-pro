@@ -8,5 +8,5 @@ export const newProductSchema = z.object({
     categoryId: z.string().min(1, {
         message: "Selecione uma categoria.",
     }),
-    image: z.string().optional(),
+    imageUrl: z.string().optional(),
 })
