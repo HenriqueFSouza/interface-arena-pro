@@ -37,7 +37,7 @@ const Receipt = React.forwardRef(({
         <div ref={ref} className="w-[80mm] font-mono text-xs leading-tight p-5 mx-auto text-black bg-white">
             {showHeader && (
                 <div className="text-center mb-2.5">
-                    <h1 className="text-2xl font-bold text-primary">ARENA PRO</h1>
+                    <h1 className="text-2xl font-bold text-primary italic">PayArena</h1>
                     <p className="text-sm font-bold my-1.5">Pedido #{order?.id.slice(-6)}</p>
                     {order?.clients.length > 0 && (
                         <div className="flex justify-between my-2 text-xs">

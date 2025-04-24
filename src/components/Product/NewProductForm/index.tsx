@@ -37,7 +37,7 @@ export default function NewProductForm({ id, defaultValues }: NewProductFormProp
       name: "",
       price: undefined,
       categoryId: "",
-      imageUrl: "",
+      imageUrl: undefined,
     },
   })
 
@@ -112,7 +112,7 @@ export default function NewProductForm({ id, defaultValues }: NewProductFormProp
     }
   }
 
-  const imageValue = watch("imageUrl") || ""
+  const imageValue = watch("imageUrl") || undefined
   const isLoading = isSubmitting || isCreating || isUpdating || isUploading
 
   return (
@@ -164,14 +164,14 @@ export default function NewProductForm({ id, defaultValues }: NewProductFormProp
         )}
       </div>
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-1.5 h-fit">
         <label className="text-sm text-neutral-700 font-medium leading-none">
           Imagem do Produto
         </label>
         <UploadInput
           value={imageValue}
           onChange={(value) => setValue("imageUrl", value)}
-          onRemove={() => setValue("imageUrl", "")}
+          onRemove={() => setValue("imageUrl", undefined)}
           onFileSelect={setSelectedFile}
           disabled={isLoading}
           loading={isUploading}

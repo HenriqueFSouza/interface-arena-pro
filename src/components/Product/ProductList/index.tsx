@@ -25,6 +25,12 @@ export default function ProductList() {
         )
     }
 
+    if (categories.length === 0) {
+        return (
+            <div className="text-neutral-500 text-center py-8">Nenhum produto cadastrado</div>
+        )
+    }
+
     return (
         <div className="space-y-8">
             {categories.map((category) => (
@@ -42,7 +48,7 @@ export default function ProductList() {
                             <div className="flex flex-wrap gap-6">
                                 {category.products.map((product) => (
                                     <ProductCard
-                                        className="w-32"
+                                        className="w-24"
                                         key={product.id}
                                         product={product}
                                         onDelete={handleProductDelete}

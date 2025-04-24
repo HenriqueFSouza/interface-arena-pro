@@ -3,10 +3,9 @@
 import { Input } from "@/components/ui/input"
 import { useProducts } from "@/hooks/useProducts"
 import { useSalesStore } from "@/lib/sales-store"
-import { Plus, Search } from "lucide-react"
+import { Search } from "lucide-react"
 import { useEffect, useState } from "react"
 import ProductCard from "../../Product/ProductCard"
-import { Button } from "../../ui/button"
 interface OrderProductsListProps {
   categoryOverride?: string | null;
 }
@@ -36,7 +35,7 @@ export default function OrderProductsList({ categoryOverride }: OrderProductsLis
   })
 
   if (isLoading) {
-    return <div className="text-center py-12">Loading products...</div>
+    return <div className="text-center py-12">Buscando produtos...</div>
   }
 
 
@@ -59,15 +58,11 @@ export default function OrderProductsList({ categoryOverride }: OrderProductsLis
         <div className="flex flex-wrap gap-6">
           {products.map((product) => (
             <ProductCard
-              className="w-40"
+              className="w-24 cursor-pointer hover:border-primary transition-color"
               key={product.id}
               product={product}
-              button={
-                <Button onClick={() => addToCart(product)} className="w-full text-primary border-primary font-semibold" size="sm" variant="outline">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Adicionar
-                </Button>
-              } />
+              onSelect={() => addToCart(product)}
+            />
           ))}
         </div>
       )}

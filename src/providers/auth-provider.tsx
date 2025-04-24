@@ -1,8 +1,8 @@
 'use client'
 
-import { createContext, useContext } from 'react'
-import { useRouter } from 'next/navigation'
 import { authService } from '@/services/auth'
+import { useRouter } from 'next/navigation'
+import { createContext, useContext } from 'react'
 
 interface AuthContextType {
     logout: () => Promise<void>

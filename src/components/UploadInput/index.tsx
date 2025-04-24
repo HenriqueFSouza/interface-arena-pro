@@ -12,7 +12,7 @@ import { toast } from "react-hot-toast"
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 interface ImageUploadProps {
-    value: string
+    value: string | undefined
     onChange: (value: string) => void
     onRemove: () => void
     onFileSelect?: (file: File | null) => void
@@ -90,7 +90,7 @@ export default function UploadInput({
                     )}
                 </div>
             ) : (
-                <div className="w-full aspect-square">
+                <div className="w-full">
                     <label
                         htmlFor="imageUpload"
                         className={cn(

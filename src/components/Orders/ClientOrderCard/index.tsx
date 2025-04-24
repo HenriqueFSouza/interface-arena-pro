@@ -24,6 +24,7 @@ export default function ClientOrderCard({ order }: ClientOrderCardProps) {
 
   return (
     <Card className="relative cursor-pointer hover:border-primary transition-colors">
+
       <PrintOrder
         showButton
         order={order}
@@ -32,13 +33,13 @@ export default function ClientOrderCard({ order }: ClientOrderCardProps) {
       />
       <PaymentDialog order={order} />
       <div onClick={handleClick}>
-        <CardHeader className="pb-2">
+        <CardHeader className="px-4 py-2 flex flex-row flex-nowrap">
           <CardTitle className="text-lg">{order.clients[0].name}</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4">
           <div className="flex justify-between items-center">
             <div className="text-sm text-muted-foreground">Valor total</div>
-            <div className="text-xl font-bold">{formatToBRL(totalPrice)}</div>
+            <div className="text-lg font-bold 2xl:text-xl">{formatToBRL(totalPrice)}</div>
           </div>
           <div className="mt-2 text-sm text-muted-foreground">
             {totalItems} {totalItems === 1 ? "item" : "items"}

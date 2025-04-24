@@ -27,7 +27,7 @@ import { usePayments } from "@/hooks/usePayments";
 import { CreatePaymentRequest, PaymentMethod } from "@/services/payments";
 import { formatToBRL } from "@/utils/formaters";
 import { getPaymentMethodIcon, getPaymentMethodLabel } from "@/utils/payments";
-import { Banknote, CreditCard, QrCode, Trash2, Wallet } from "lucide-react";
+import { Banknote, CircleDollarSign, CreditCard, QrCode, Trash2, Wallet } from "lucide-react";
 import { useMemo, useState } from "react";
 
 interface PaymentDialogProps {
@@ -123,9 +123,9 @@ export default function PaymentDialog({ order }: PaymentDialogProps) {
             <Dialog open={isOpen} onOpenChange={handleOpenChange}>
                 <DialogTitle asChild className="text-center">Pagamento</DialogTitle>
                 <DialogTrigger asChild>
-                    <Button variant="ghost" size="sm" className="text-blue-500 font-bold hover:bg-blue-500/15 hover:text-blue-500 absolute top-2 right-2 gap-2">
-                        <CreditCard className="w-4 h-4" />
-                        Pagar
+                    <Button variant="ghost" size="sm" className="text-blue-500 font-bold hover:bg-blue-500/15 hover:text-blue-500 absolute p-2 top-2 right-2 gap-2">
+                        <CircleDollarSign className="w-4 h-4" />
+                        <span className="hidden 2xl:block">Pagar</span>
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[900px] h-[80vh] flex flex-col">

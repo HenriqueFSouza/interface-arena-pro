@@ -7,18 +7,18 @@ import { formatToBRL } from "@/utils/formaters"
 import { MoreVertical, Pencil, Trash2 } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { JSX, useState } from "react"
+import { useState } from "react"
 import DeleteDialog from "../DeleteDialog"
 
 interface ProductCardProps {
     product: Product
-    button?: JSX.Element
     className?: string
     isEditable?: boolean
     onDelete?: () => void
+    onSelect?: () => void
 }
 
-export default function ProductCard({ product, button, onDelete, className, isEditable }: ProductCardProps) {
+export default function ProductCard({ product, onDelete, className, isEditable, onSelect }: ProductCardProps) {
     const router = useRouter()
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
@@ -31,7 +31,9 @@ export default function ProductCard({ product, button, onDelete, className, isEd
             <Card className={cn(
                 "overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 relative",
                 className
-            )}>
+            )}
+                onClick={onSelect}
+            >
                 {onDelete && isEditable && (
                     <div className="absolute top-2 right-2 z-10">
                         <DropdownMenu>
@@ -73,11 +75,6 @@ export default function ProductCard({ product, button, onDelete, className, isEd
                     <p className="text-sm font-bold">{formatToBRL(product.price)}</p>
                     {/* <p className="text-sm text-muted-foreground">{product.category}</p> */}
                 </CardFooter>
-                {button && (
-                    <CardFooter className="p-2">
-                        {button}
-                    </CardFooter>
-                )}
             </Card>
             {onDelete && (
                 <DeleteDialog product={product} open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} onDelete={onDelete} />

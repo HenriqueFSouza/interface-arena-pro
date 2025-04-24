@@ -10,7 +10,6 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import UploadInput from "@/components/UploadInput"
 import { useCategories } from "@/hooks/useCategories"
 import { newCategorySchema } from "@/schemas/new-category"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -75,7 +74,7 @@ export default function CategoryModal() {
                         {...register("name")}
                     />
 
-                    <div className="flex flex-col gap-1.5">
+                    {/* <div className="flex flex-col gap-1.5">
                         <label className="text-sm text-neutral-700 font-medium leading-none">
                             Imagem da Categoria
                         </label>
@@ -87,7 +86,7 @@ export default function CategoryModal() {
                         {errors.image?.message && (
                             <p className="text-red-500 text-sm">{errors.image.message}</p>
                         )}
-                    </div>
+                    </div> */}
 
                     <DialogFooter>
                         <Button type="submit" disabled={isSubmitting} isLoading={isSubmitting}>

@@ -52,9 +52,9 @@ export default function CartSummary() {
       handleCloseOverlay()
 
       // Print after closing
-      if (order) {
-        printItem()
-      }
+      // if (order) {
+      //   printItem()
+      // }
     } catch (error) {
       console.error(error)
     }
@@ -81,12 +81,12 @@ export default function CartSummary() {
         </div>
       ) : (
         <ScrollArea className="flex-1">
-          <div className="p-4 space-y-4">
+          <div className="p-2 space-y-4">
             {cartItems.map((item) => (
-              <div key={item.product.id} className="space-y-2">
+              <div key={item.product.id} className="space-y-1">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-medium">{item.product.name}</h3>
+                    <h3 className="font-medium max-w-[170px] truncate">{item.product.name}</h3>
                     <p className="text-sm text-muted-foreground">{formatToBRL(item.product.price)} cada</p>
                   </div>
                   <div className="text-right">
@@ -97,22 +97,22 @@ export default function CartSummary() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
-                      className="p-2 h-8 w-8"
+                      className="p-0 border-none"
                       onClick={() => decreaseQuantity(item.product.id)}
                       disabled={item.quantity <= 1}
                     >
-                      <Minus className="h-4 w-4" />
+                      <Minus className="size-4" />
                     </Button>
                     <span className="w-8 text-center">{item.quantity}</span>
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
-                      className="p-2 h-8 w-8"
+                      className="p-0 border-none"
                       onClick={() => increaseQuantity(item.product.id)}
                     >
-                      <Plus className="h-4 w-4" />
+                      <Plus className="size-4" />
                     </Button>
                   </div>
 

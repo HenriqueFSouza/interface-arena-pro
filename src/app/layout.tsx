@@ -12,7 +12,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "Arena Pro",
+  title: "PayArena",
   description: "Sistema de gerenciamento de produtos",
 };
 

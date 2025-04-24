@@ -15,6 +15,7 @@ export const routes = [
         label: "Relatórios",
         href: "/reports",
         icon: BarChart,
+        disabled: true,
     }
 ]
 
