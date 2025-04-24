@@ -3,7 +3,6 @@
 import { Order } from '@/@types/order';
 import { Button } from '@/components/ui/button';
 import { CartItem } from '@/lib/sales-store';
-import { hasThermalPrinter } from '@/utils/printerUtils';
 import { Printer } from 'lucide-react';
 import { useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
@@ -38,12 +37,8 @@ const PrintOrder = ({
   });
 
   const printWithThermalCheck = async () => {
-    const hasThermal = await hasThermalPrinter();
-    if (hasThermal) {
-      handlePrint();
-    } else {
-      console.log('No thermal printer detected, skipping print');
-    }
+
+    handlePrint();
   };
 
   return (
@@ -90,12 +85,7 @@ export const usePrintItem = () => {
 
   const printItem = async () => {
     if (printItemRef.current) {
-      const hasThermal = await hasThermalPrinter();
-      if (hasThermal) {
-        handlePrint();
-      } else {
-        console.log('No thermal printer detected, skipping print');
-      }
+      handlePrint();
     }
   };
 
