@@ -6,6 +6,7 @@ import { Product } from "@/@types/product"
 import { create } from "zustand"
 
 export interface CartItem {
+  id?: string
   product: Product
   quantity: number
 }
@@ -92,7 +93,7 @@ export const useSalesStore = create<SalesStore>((set, get) => ({
   },
 
   initializeCart: (items: OrderItem[]) => {
-    set({ cartItems: items.map((item) => ({ product: item.product, quantity: item.quantity, categoryId: item.product.categoryId })) })
+    set({ cartItems: items.map((item) => ({ id: item.id, product: item.product, quantity: item.quantity, categoryId: item.product.categoryId })) })
   },
 
   getTotalPrice: () => {

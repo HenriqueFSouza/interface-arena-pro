@@ -50,6 +50,19 @@ export const useOrders = () => {
         }
     })
 
+    const removeOrderItem = useMutation({
+        mutationFn: (params: { orderId: string, itemId: string }) =>
+            ordersService.removeOrderItem(params.orderId, params.itemId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['orders'] })
+            refetch()
+            toast.success('Item removido do pedido')
+        },
+        onError: () => {
+            toast.error('Erro ao remover item do pedido')
+        }
+    })
+
     const deleteOrder = useMutation({
         mutationFn: ordersService.deleteOrder,
         onSuccess: () => {
@@ -65,11 +78,12 @@ export const useOrders = () => {
     return {
         orders: data ?? [],
         isLoading: isLoading || isFetching,
-        isPending: createOrder.isPending || addOrderItem.isPending || closeOrder.isPending || deleteOrder.isPending,
+        isPending: createOrder.isPending || addOrderItem.isPending || closeOrder.isPending || deleteOrder.isPending || removeOrderItem.isPending,
         createOrder: createOrder.mutate,
         addOrderItem: addOrderItem.mutate,
         closeOrder: closeOrder.mutate,
         deleteOrder: deleteOrder.mutate,
+        removeOrderItem: removeOrderItem.mutate,
         error,
     }
 }
