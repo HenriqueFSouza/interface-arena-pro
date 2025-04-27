@@ -39,5 +39,10 @@ export const ordersService = {
     async deleteOrder(orderId: string): Promise<void> {
         const response = await api.delete(`/orders/${orderId}`)
         return response.data
+    },
+
+    async removeOrderItem(orderId: string, itemId: string): Promise<void> {
+        const response = await api.delete(`/orders/${orderId}/items/${itemId}`)
+        return response.data
     }
 } 

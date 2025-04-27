@@ -25,7 +25,7 @@ export default function CartSummary() {
     setSelectedClient,
   } = useSalesStore()
 
-  const { orders, addOrderItem, isPending } = useOrders()
+  const { orders, addOrderItem, isPending, removeOrderItem } = useOrders()
   const { printItem, printItemRef } = usePrintItem()
 
   const handleCloseOverlay = () => {
@@ -58,6 +58,11 @@ export default function CartSummary() {
     } catch (error) {
       console.error(error)
     }
+  }
+
+  const handleDeleteItem = (id: string) => {
+    removeOrderItem({ orderId: selectedClient.orderId, itemId: id })
+    handleCloseOverlay()
   }
 
   return (
@@ -120,7 +125,7 @@ export default function CartSummary() {
                     variant="ghost"
                     size="sm"
                     className="p-2 h-8 w-8 text-destructive"
-                    onClick={() => removeFromCart(item.product.id)}
+                    onClick={() => handleDeleteItem(item.id!)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

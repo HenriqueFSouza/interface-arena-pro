@@ -19,7 +19,8 @@ export const authService = {
   },
 
   async logout() {
-    await api.post('/auth/logout')
+    const response = await api.post('/auth/logout')
+    return response
   },
 
   async validateToken(): Promise<boolean> {

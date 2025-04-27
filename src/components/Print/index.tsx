@@ -49,7 +49,7 @@ const PrintOrder = ({
           onClick={() => printWithThermalCheck()}
           size={size}
           variant={variant}
-          className="gap-2 absolute top-2 right-10 p-2"
+          className="gap-2 absolute top-2 right-12 p-2"
         >
           <Printer className="h-4 w-4" />
           {buttonLabel}
