@@ -3,10 +3,13 @@
 import { OrderItem } from "@/@types/order"
 import { ordersService } from "@/services/orders"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useState } from "react"
 import { toast } from "react-hot-toast"
 
 export const useOrders = () => {
     const queryClient = useQueryClient()
+
+    const [search, setSearch] = useState('')
 
     const { data, isLoading, isFetching, error, refetch } = useQuery({
         queryKey: ['orders'],
@@ -75,10 +78,16 @@ export const useOrders = () => {
         }
     })
 
+    const filteredOrders = data?.filter((order) =>
+        order.clients[0].name.toLowerCase().includes(search.toLowerCase())
+    )
+
     return {
-        orders: data ?? [],
+        orders: filteredOrders ?? [],
         isLoading: isLoading || isFetching,
         isPending: createOrder.isPending || addOrderItem.isPending || closeOrder.isPending || deleteOrder.isPending || removeOrderItem.isPending,
+        search,
+        setSearch,
         createOrder: createOrder.mutate,
         addOrderItem: addOrderItem.mutate,
         closeOrder: closeOrder.mutate,
