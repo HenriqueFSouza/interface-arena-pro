@@ -14,7 +14,7 @@ export default function ClientOrderCard({ order }: ClientOrderCardProps) {
   const { setSelectedClient, initializeCart, setIsOverlayOpen } = useSalesStore()
 
   const handleClick = () => {
-    setSelectedClient(order.clients[0])
+    setSelectedClient({ ...order.clients[0], orderId: order.id })
     initializeCart(order.items)
     setIsOverlayOpen(true)
   }

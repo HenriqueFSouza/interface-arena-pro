@@ -39,7 +39,6 @@ export default function NewOrderDialog() {
         resolver: zodResolver(newOrderSchema),
         defaultValues: {
             name: "",
-            phone: ""
         }
     })
 
