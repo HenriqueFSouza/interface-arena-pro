@@ -3,7 +3,7 @@ import { api } from '@/lib/api';
 export interface CreateOrderRequest {
     clientInfo: {
         name: string;
-        phone: string;
+        phone?: string;
     }
     items?: Array<{
         productId: string;
