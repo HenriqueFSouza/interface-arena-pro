@@ -81,11 +81,10 @@ export default function PaymentDialog({ order }: PaymentDialogProps) {
         if (isNaN(amount) || amount <= 0 || amount > remainingAmount || !order?.id) {
             return;
         }
-
         const newPayment: CreatePaymentRequest = {
             method: newPaymentMethod,
             amount: amount,
-            orderClientId: order.clients[0].id
+            orderClientId: order.clients[0].orderClientId || undefined
         };
 
         await addPayment(newPayment);

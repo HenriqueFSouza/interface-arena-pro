@@ -14,7 +14,7 @@ export interface Payment {
 export interface CreatePaymentRequest {
     method: PaymentMethod;
     amount: number;
-    orderClientId: string;
+    orderClientId?: string;
 }
 
 export const paymentsService = {
