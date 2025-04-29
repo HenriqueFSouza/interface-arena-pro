@@ -41,8 +41,8 @@ const Receipt = React.forwardRef(({
                     <p className="text-sm font-bold my-1.5">Pedido #{order?.id.slice(-6)}</p>
                     {order?.clients.length > 0 && (
                         <div className="flex justify-between my-2 text-xs">
-                            <p className="my-0.5">Cliente: {order.clients[0].name}</p>
-                            <p className="my-0.5">Tel: {order.clients[0].phone}</p>
+                            <p className="my-0.5">{order.clients[0].name}</p>
+                            <p className="my-0.5">{order.clients[0].phone}</p>
                         </div>
                     )}
                     <div className="flex justify-between my-2 text-xs">
