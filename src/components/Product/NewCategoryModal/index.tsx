@@ -10,7 +10,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { useCategories } from "@/hooks/useCategories"
+import { useCategories, useCategoryProducts } from "@/hooks/useCategories"
 import { newCategorySchema } from "@/schemas/new-category"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { DialogTrigger } from "@radix-ui/react-dialog"
@@ -22,17 +22,16 @@ import { z } from "zod"
 
 export default function CategoryModal() {
     const [open, setOpen] = useState(false)
-    const { createCategory } = useCategories()
+    const { isLoading: isLoadingCategories, createCategory, invalidateCategories } = useCategories()
+    const { invalidateCategories: invalidateCategoryProducts } = useCategoryProducts()
 
-    const { register, handleSubmit, formState: { errors, isSubmitting }, reset, setValue, watch } = useForm<z.infer<typeof newCategorySchema>>({
+    const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<z.infer<typeof newCategorySchema>>({
         resolver: zodResolver(newCategorySchema),
         defaultValues: {
             name: "",
             image: "",
         },
     })
-
-    const imageValue = watch("image") || ""
 
     function onSubmit(values: z.infer<typeof newCategorySchema>) {
         createCategory(
@@ -44,6 +43,8 @@ export default function CategoryModal() {
                 onSuccess: () => {
                     toast.success('Categoria criada com sucesso')
                     reset()
+                    invalidateCategories()
+                    invalidateCategoryProducts()
                     setOpen(false)
                 },
                 onError: () => {
@@ -89,7 +90,7 @@ export default function CategoryModal() {
                     </div> */}
 
                     <DialogFooter>
-                        <Button type="submit" disabled={isSubmitting} isLoading={isSubmitting}>
+                        <Button type="submit" disabled={isSubmitting || isLoadingCategories} isLoading={isSubmitting || isLoadingCategories}>
                             Criar
                         </Button>
                     </DialogFooter>
