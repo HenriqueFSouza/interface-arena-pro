@@ -40,14 +40,17 @@ export default function CartSummary() {
 
   const handleMakeOrder = async () => {
     try {
-      addOrderItem({
-        orderId: selectedClient.orderId,
-        items: cartItems.map((item) => ({
-          productId: item.product.id,
-          quantity: item.quantity,
-          orderClientId: selectedClient.id,
-        }))
-      })
+      // Only send new items to the backend
+      if (newCartItems.length > 0) {
+        addOrderItem({
+          orderId: selectedClient.orderId,
+          items: newCartItems.map((item) => ({
+            productId: item.product.id,
+            quantity: item.quantity,
+            orderClientId: selectedClient.id,
+          }))
+        })
+      }
 
       handleCloseOverlay()
 
@@ -142,7 +145,7 @@ export default function CartSummary() {
           <span className="font-medium">Valor total</span>
           <span className="text-xl font-bold">{formatToBRL(getTotalPrice())}</span>
         </div>
-        <Button className="w-full" size="lg" disabled={cartItems.length === 0} onClick={handleMakeOrder} isLoading={isPending}>
+        <Button className="w-full" size="lg" disabled={cartItems.length === 0 || newCartItems.length === 0} onClick={handleMakeOrder} isLoading={isPending}>
           Fazer pedido
         </Button>
         <DeleteOrderDialog

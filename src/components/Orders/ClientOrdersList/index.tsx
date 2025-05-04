@@ -13,6 +13,14 @@ export default function ClientOrderList() {
     setSearch(e.target.value)
   }
 
+  if (isLoading) {
+    return (
+      <ClientOrderSkeleton />
+    )
+  }
+
+  const noOrdersFound = orders.length === 0 && !isLoading
+
   return (
     <>
       <div className="mb-4 relative bg-card rounded-md">
@@ -26,22 +34,19 @@ export default function ClientOrderList() {
         />
       </div>
 
-      {isLoading ? (
-        <ClientOrderSkeleton />
-      ) : orders.length === 0 ? (
-        <div className="text-center py-8">
-          <p className="text-muted-foreground">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {noOrdersFound ? (
+          <div className="text-center py-8">
             {search
               ? `Nenhum resultado encontrado para "${search}"`
               : "Nenhuma comanda aberta no momento"
             }
-          </p>
-        </div>
-      ) : null}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {orders.map((order) => (
-          <ClientOrderCard key={order.id} order={order} />
-        ))}
+          </div>
+        ) : (
+          orders.map((order) => (
+            <ClientOrderCard key={order.id} order={order} />
+          ))
+        )}
       </div>
     </>
   )

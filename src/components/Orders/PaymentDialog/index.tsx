@@ -27,6 +27,7 @@ import { usePayments } from "@/hooks/usePayments";
 import { CreatePaymentRequest, PaymentMethod } from "@/services/payments";
 import { formatToBRL } from "@/utils/formaters";
 import { getPaymentMethodIcon, getPaymentMethodLabel } from "@/utils/payments";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Banknote, CircleDollarSign, CreditCard, QrCode, Trash2, Wallet } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -120,14 +121,15 @@ export default function PaymentDialog({ order }: PaymentDialogProps) {
     return (
         <>
             <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-                <DialogTitle asChild className="text-center">Pagamento</DialogTitle>
-
                 <DialogTrigger asChild>
                     <Button variant="ghost" size="sm" className="text-blue-500 font-bold hover:bg-blue-500/15 hover:text-blue-500 absolute p-2 top-2 right-2 gap-2">
                         <CircleDollarSign className="w-4 h-4" />
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[900px] h-[80vh] flex flex-col">
+                    <VisuallyHidden>
+                        <DialogTitle className="text-center">Pagamento</DialogTitle>
+                    </VisuallyHidden>
                     <div className="flex flex-1 gap-4 overflow-hidden">
                         {/* Left Panel - Order Items (Read Only) */}
                         <div className="w-1/2 flex flex-col">

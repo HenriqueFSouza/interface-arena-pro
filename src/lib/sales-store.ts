@@ -56,35 +56,59 @@ export const useSalesStore = create<SalesStore>((set, get) => ({
         newCartItems: [...newCartItems, { product, quantity: 1 }],
       })
     } else {
-      set({ cartItems: [...cartItems, { product, quantity: 1 }], newCartItems: [...newCartItems, { product, quantity: 1 }] })
+      set({
+        cartItems: [...cartItems, { product, quantity: 1 }],
+        newCartItems: [...newCartItems, { product, quantity: 1 }]
+      })
     }
   },
 
   increaseQuantity: (productId) => {
     const { cartItems, newCartItems } = get()
-    set({
-      cartItems: cartItems.map((item) =>
-        item.product.id === productId ? { ...item, quantity: item.quantity + 1 } : item,
-      ),
-      newCartItems: newCartItems.map((item) =>
-        item.product.id === productId ? { ...item, quantity: item.quantity + 1 } : item,
-      ),
-    })
+
+    // Check if product exists in cartItems
+    const existingItem = cartItems.find(item => item.product.id === productId)
+
+    if (existingItem) {
+      // Update cartItems
+      const updatedCartItems = cartItems.map((item) =>
+        item.product.id === productId ? { ...item, quantity: item.quantity + 1 } : item
+      )
+
+      // Add to newCartItems
+      const updatedNewCartItems = [...newCartItems, {
+        product: existingItem.product,
+        quantity: 1
+      }]
+
+      set({
+        cartItems: updatedCartItems,
+        newCartItems: updatedNewCartItems
+      })
+    }
   },
 
   decreaseQuantity: (productId) => {
-    const { cartItems } = get()
-    set({
-      cartItems: cartItems.map((item) =>
-        item.product.id === productId && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item,
-      ),
-    })
+    const { cartItems, newCartItems } = get()
+
+    const itemToDecrease = cartItems.find(item => item.product.id === productId && item.quantity > 1)
+
+    if (itemToDecrease) {
+      set({
+        cartItems: cartItems.map((item) =>
+          item.product.id === productId ? { ...item, quantity: item.quantity - 1 } : item
+        ),
+      })
+    }
   },
 
   removeFromCart: (productId) => {
-    const { cartItems } = get()
+    const { cartItems, newCartItems } = get()
+
     set({
       cartItems: cartItems.filter((item) => item.product.id !== productId),
+      // Filter out any new items with this product ID
+      newCartItems: newCartItems.filter((item) => item.product.id !== productId),
     })
   },
 
@@ -93,7 +117,15 @@ export const useSalesStore = create<SalesStore>((set, get) => ({
   },
 
   initializeCart: (items: OrderItem[]) => {
-    set({ cartItems: items.map((item) => ({ id: item.id, product: item.product, quantity: item.quantity, categoryId: item.product.categoryId })) })
+    set({
+      cartItems: items.map((item) => ({
+        id: item.id,
+        product: item.product,
+        quantity: item.quantity,
+        categoryId: item.product.categoryId
+      })),
+      newCartItems: []
+    })
   },
 
   getTotalPrice: () => {
