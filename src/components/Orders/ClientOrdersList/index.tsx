@@ -2,6 +2,7 @@
 
 import { Input } from "@/components/ui/input"
 import { useOrders } from "@/hooks/useOrders"
+import { formatToBRL } from "@/utils/formaters"
 import { Search } from "lucide-react"
 import ClientOrderCard from "../ClientOrderCard"
 import ClientOrderSkeleton from "../ClientOrderSkeleton"
@@ -21,6 +22,8 @@ export default function ClientOrderList() {
 
   const noOrdersFound = orders.length === 0 && !isLoading
 
+  const subTotal = orders.reduce((acc, order) => acc + order.items.reduce((acc, item) => acc + item.price! * item.quantity, 0), 0)
+
   return (
     <>
       <div className="mb-4 relative bg-card rounded-md">
@@ -33,6 +36,8 @@ export default function ClientOrderList() {
           onChange={handleSearch}
         />
       </div>
+
+      {!noOrdersFound && <p className="text-sm text-muted-foreground mb-2">Subtotal: <strong className="text-neutral-900 font-bold text-base">{formatToBRL(subTotal)}</strong></p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {noOrdersFound ? (
