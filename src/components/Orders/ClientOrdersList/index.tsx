@@ -2,6 +2,7 @@
 
 import { Input } from "@/components/ui/input"
 import { useOrders } from "@/hooks/useOrders"
+import { formatToBRL } from "@/utils/formaters"
 import { Search } from "lucide-react"
 import ClientOrderCard from "../ClientOrderCard"
 import ClientOrderSkeleton from "../ClientOrderSkeleton"
@@ -12,6 +13,16 @@ export default function ClientOrderList() {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value)
   }
+
+  if (isLoading) {
+    return (
+      <ClientOrderSkeleton />
+    )
+  }
+
+  const noOrdersFound = orders.length === 0 && !isLoading
+
+  const subTotal = orders.reduce((acc, order) => acc + order.items.reduce((acc, item) => acc + item.price! * item.quantity, 0), 0)
 
   return (
     <>
@@ -26,22 +37,21 @@ export default function ClientOrderList() {
         />
       </div>
 
-      {isLoading ? (
-        <ClientOrderSkeleton />
-      ) : orders.length === 0 ? (
-        <div className="text-center py-8">
-          <p className="text-muted-foreground">
+      {!noOrdersFound && <p className="text-sm text-muted-foreground mb-2">Subtotal: <strong className="text-neutral-900 font-bold text-base">{formatToBRL(subTotal)}</strong></p>}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {noOrdersFound ? (
+          <div className="text-center py-8">
             {search
               ? `Nenhum resultado encontrado para "${search}"`
               : "Nenhuma comanda aberta no momento"
             }
-          </p>
-        </div>
-      ) : null}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {orders.map((order) => (
-          <ClientOrderCard key={order.id} order={order} />
-        ))}
+          </div>
+        ) : (
+          orders.map((order) => (
+            <ClientOrderCard key={order.id} order={order} />
+          ))
+        )}
       </div>
     </>
   )

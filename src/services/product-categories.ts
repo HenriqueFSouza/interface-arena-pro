@@ -15,5 +15,14 @@ export const categoriesService = {
     async createCategory(data: Omit<Category, 'id'>): Promise<Category> {
         const response = await api.post<Category>('/product-categories', data)
         return response.data
+    },
+
+    async updateCategory(id: string, name: string): Promise<Category> {
+        const response = await api.put<Category>(`/product-categories/${id}`, { name })
+        return response.data
+    },
+
+    async deleteCategory(id: string): Promise<void> {
+        await api.delete(`/product-categories/${id}`)
     }
 } 

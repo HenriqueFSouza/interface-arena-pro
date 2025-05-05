@@ -11,6 +11,7 @@ export type OrderItem = {
     quantity: number
     productId: string
     orderClientId: string
+    price?: number
     product: {
         id: string
         name: string

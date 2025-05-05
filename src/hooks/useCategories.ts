@@ -8,6 +8,7 @@ export const useCategories = () => {
         data: categories = [],
         isLoading,
         error,
+        refetch,
     } = useQuery({
         queryKey: ['categories'],
         queryFn: categoriesService.getAllCategories,
@@ -22,9 +23,27 @@ export const useCategories = () => {
         }
     })
 
+    const updateCategory = useMutation({
+        mutationFn: ({ id, name }: { id: string; name: string }) =>
+            categoriesService.updateCategory(id, name),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['categories'] })
+            queryClient.invalidateQueries({ queryKey: ['categories-with-products'] })
+        }
+    })
+
+    const deleteCategory = useMutation({
+        mutationFn: (id: string) => categoriesService.deleteCategory(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['categories'] })
+            queryClient.invalidateQueries({ queryKey: ['categories-with-products'] })
+        }
+    })
+
     const invalidateCategories = () => {
         queryClient.invalidateQueries({ queryKey: ['categories'] })
         queryClient.invalidateQueries({ queryKey: ['categories-with-products'] })
+        refetch()
     }
 
     return {
@@ -32,6 +51,8 @@ export const useCategories = () => {
         isLoading,
         error,
         createCategory: createCategory.mutate,
+        updateCategory: updateCategory.mutate,
+        deleteCategory: deleteCategory.mutate,
         invalidateCategories
     }
 }
@@ -42,7 +63,9 @@ export const useCategoryProducts = () => {
     const {
         data: categories = [],
         isLoading,
+        isRefetching,
         error,
+        refetch,
     } = useQuery({
         queryKey: ['categories-with-products'],
         queryFn: categoriesService.getAllCategories,
@@ -57,16 +80,36 @@ export const useCategoryProducts = () => {
         }
     })
 
+    const updateCategory = useMutation({
+        mutationFn: ({ id, name }: { id: string; name: string }) =>
+            categoriesService.updateCategory(id, name),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['categories-with-products'] })
+            queryClient.invalidateQueries({ queryKey: ['categories'] })
+        }
+    })
+
+    const deleteCategory = useMutation({
+        mutationFn: (id: string) => categoriesService.deleteCategory(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['categories-with-products'] })
+            queryClient.invalidateQueries({ queryKey: ['categories'] })
+        }
+    })
+
     const invalidateCategories = () => {
         queryClient.invalidateQueries({ queryKey: ['categories-with-products'] })
         queryClient.invalidateQueries({ queryKey: ['categories'] })
+        refetch()
     }
 
     return {
         categories,
-        isLoading,
+        isLoading: isLoading || isRefetching,
         error,
         createCategory: createCategory.mutate,
+        updateCategory: updateCategory.mutate,
+        deleteCategory: deleteCategory.mutate,
         invalidateCategories
     }
 } 
