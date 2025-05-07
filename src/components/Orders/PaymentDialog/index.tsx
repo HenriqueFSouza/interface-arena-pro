@@ -30,6 +30,7 @@ import { getPaymentMethodIcon, getPaymentMethodLabel } from "@/utils/payments";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Banknote, CircleDollarSign, CreditCard, QrCode, Trash2, Wallet } from "lucide-react";
 import { useMemo, useState } from "react";
+import { DiscountSection } from "./DiscountSection";
 
 interface PaymentDialogProps {
     order?: Order;
@@ -38,6 +39,7 @@ interface PaymentDialogProps {
 export default function PaymentDialog({ order }: PaymentDialogProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [discountAmount, setDiscountAmount] = useState(0);
 
     const [newPaymentMethod, setNewPaymentMethod] = useState<PaymentMethod>("CASH");
     const [newPaymentAmount, setNewPaymentAmount] = useState("");
@@ -61,13 +63,17 @@ export default function PaymentDialog({ order }: PaymentDialogProps) {
         );
     }, [order]);
 
+    const finalAmount = useMemo(() => {
+        return totalAmount - discountAmount;
+    }, [totalAmount, discountAmount]);
+
     const totalPaid = useMemo(() => {
         return existingPayments.reduce((acc, payment) => acc + Number(payment.amount), 0);
     }, [existingPayments]);
 
     const remainingAmount = useMemo(() => {
-        return totalAmount - totalPaid;
-    }, [totalAmount, totalPaid]);
+        return finalAmount - totalPaid;
+    }, [finalAmount, totalPaid]);
 
     const handleOpenChange = (open: boolean) => {
         setIsOpen(open);
@@ -136,40 +142,16 @@ export default function PaymentDialog({ order }: PaymentDialogProps) {
                         <DialogTitle className="text-center">Pagamento</DialogTitle>
                     </VisuallyHidden>
                     <div className="flex flex-1 gap-4 overflow-hidden">
-                        {/* Left Panel - Order Items (Read Only) */}
-                        <div className="w-1/2 flex flex-col">
-                            <h3 className="text-lg font-semibold mb-2">Itens do Pedido</h3>
-
-                            <ScrollArea className="flex-1 border rounded-md p-4">
-                                {order?.items.map((item) => (
-                                    <div key={item.id} className="flex items-center justify-between py-2 border-b last:border-0">
-                                        <div>
-                                            <p className="font-medium">{item.product.name}</p>
-                                            <p className="text-sm text-muted-foreground">
-                                                {item.quantity} x {formatToBRL(item.product.price)}
-                                            </p>
-                                        </div>
-                                        <p className="font-semibold">
-                                            {formatToBRL(item.product.price * item.quantity)}
-                                        </p>
-                                    </div>
-                                ))}
-                            </ScrollArea>
-
-                            <div className="mt-4 p-4 border rounded-md bg-muted/30">
-                                <div className="flex justify-between text-lg font-semibold">
-                                    <span>Total:</span>
-                                    <span>{formatToBRL(totalAmount)}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Right Panel - Payment Methods */}
+                        {/* Left Panel - Payment Methods */}
                         <div className="w-1/2 flex flex-col">
                             <h3 className="text-lg font-semibold mb-2">Formas de Pagamento</h3>
 
                             <div className="border rounded-md flex-1 overflow-hidden flex flex-col">
                                 <div className="p-4">
+                                    <DiscountSection
+                                        totalAmount={remainingAmount}
+                                        onDiscountChange={setDiscountAmount}
+                                    />
                                     <div className="flex flex-1 gap-3">
                                         <div>
                                             <Label htmlFor="payment-method" className="mb-2 block">Método</Label>
@@ -257,6 +239,27 @@ export default function PaymentDialog({ order }: PaymentDialogProps) {
                                     </ScrollArea>
                                 </div>
                             </div>
+                        </div>
+
+                        {/* Right Panel - Order Items (Read Only) */}
+                        <div className="w-1/2 flex flex-col">
+                            <h3 className="text-lg font-semibold mb-2">Itens do Pedido</h3>
+
+                            <ScrollArea className="flex-1 border rounded-md p-4">
+                                {order?.items.map((item) => (
+                                    <div key={item.id} className="flex items-center justify-between py-2 border-b last:border-0">
+                                        <div>
+                                            <p className="font-medium">{item.product.name}</p>
+                                            <p className="text-sm text-muted-foreground">
+                                                {item.quantity} x {formatToBRL(item.product.price)}
+                                            </p>
+                                        </div>
+                                        <p className="font-semibold">
+                                            {formatToBRL(item.product.price * item.quantity)}
+                                        </p>
+                                    </div>
+                                ))}
+                            </ScrollArea>
 
                             <div className="mt-4 p-4 border rounded-md bg-muted/30 space-y-2">
                                 <div className="flex justify-between">
