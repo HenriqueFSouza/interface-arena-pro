@@ -102,6 +102,7 @@ export default function PaymentDialog({ order }: PaymentDialogProps) {
         if (!order?.id) return;
 
         if (remainingAmount > 0) {
+            setIsOpen(false);
             setShowConfirmation(true);
             return;
         }
@@ -115,7 +116,11 @@ export default function PaymentDialog({ order }: PaymentDialogProps) {
 
         await closeOrder(order.id);
         setShowConfirmation(false);
-        setIsOpen(false);
+    };
+
+    const handleCancelConfirmation = () => {
+        setShowConfirmation(false);
+        setIsOpen(true);
     };
 
     return (
@@ -290,8 +295,7 @@ export default function PaymentDialog({ order }: PaymentDialogProps) {
                 </DialogContent>
             </Dialog>
 
-            {/* Confirmation Dialog for closing order with unpaid amount */}
-            <AlertDialog open={showConfirmation} onOpenChange={setShowConfirmation}>
+            <AlertDialog open={showConfirmation}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Confirmar fechamento</AlertDialogTitle>
@@ -301,7 +305,7 @@ export default function PaymentDialog({ order }: PaymentDialogProps) {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogCancel onClick={handleCancelConfirmation}>Cancelar</AlertDialogCancel>
                         <AlertDialogAction onClick={handleConfirmCloseOrder} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
                             Fechar mesmo assim
                         </AlertDialogAction>

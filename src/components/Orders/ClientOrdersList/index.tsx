@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input"
 import { useOrders } from "@/hooks/useOrders"
 import { formatToBRL } from "@/utils/formaters"
 import { Search } from "lucide-react"
+import { useMemo } from "react"
 import ClientOrderCard from "../ClientOrderCard"
 import ClientOrderSkeleton from "../ClientOrderSkeleton"
 
@@ -14,6 +15,8 @@ export default function ClientOrderList() {
     setSearch(e.target.value)
   }
 
+  const subTotal = useMemo(() => orders.reduce((acc, order) => acc + order.items.reduce((acc, item) => acc + item.price! * item.quantity, 0), 0), [orders])
+
   if (isLoading) {
     return (
       <ClientOrderSkeleton />
@@ -22,7 +25,6 @@ export default function ClientOrderList() {
 
   const noOrdersFound = orders.length === 0 && !isLoading
 
-  const subTotal = orders.reduce((acc, order) => acc + order.items.reduce((acc, item) => acc + item.price! * item.quantity, 0), 0)
 
   return (
     <>
