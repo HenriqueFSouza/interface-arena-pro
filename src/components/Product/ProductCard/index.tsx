@@ -1,13 +1,15 @@
 import type { Product } from "@/@types/product"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardFooter } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useSalesStore } from "@/lib/sales-store"
 import { cn } from "@/lib/utils"
 import { formatToBRL } from "@/utils/formaters"
 import { MoreVertical, Pencil, Trash2 } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import DeleteDialog from "../DeleteDialog"
 
 interface ProductCardProps {
@@ -21,15 +23,26 @@ interface ProductCardProps {
 export default function ProductCard({ product, onDelete, className, isEditable, onSelect }: ProductCardProps) {
     const router = useRouter()
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+    const { newCartItems } = useSalesStore()
 
     const handleEdit = () => {
         isEditable && router.push(`/products/${product.id}`)
     }
 
+    const isProductSelectedInNewItems = useMemo(() => newCartItems.find(item => item.product.id === product.id), [newCartItems, product.id])
+
     return (
-        <>
+        <div className="relative">
+            {/* New Item Quantity Counter Badge */}
+            {isProductSelectedInNewItems && onSelect && (
+                <Badge className="absolute -top-1 -right-2 z-50 bg-blue-500 hover:bg-blue-600 px-2">{
+                    isProductSelectedInNewItems.quantity
+                }</Badge>
+            )}
+
+            {/* Card */}
             <Card className={cn(
-                "overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 relative",
+                "relative overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 z-10",
                 className
             )}
                 onClick={onSelect}
@@ -79,6 +92,6 @@ export default function ProductCard({ product, onDelete, className, isEditable, 
             {onDelete && (
                 <DeleteDialog product={product} open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} onDelete={onDelete} />
             )}
-        </>
+        </div>
     )
 }

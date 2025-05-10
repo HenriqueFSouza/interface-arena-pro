@@ -47,18 +47,23 @@ export const useSalesStore = create<SalesStore>((set, get) => ({
   addToCart: (product) => {
     const { cartItems, newCartItems } = get()
     const existingItem = cartItems.find((item) => item.product.id === product.id)
+    const existingItemInNewCartItems = newCartItems.find((item) => item.product.id === product.id)
+
+    const updatedNewCartItems = existingItemInNewCartItems ? newCartItems.map((item) =>
+      item.product.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+    ) : [...newCartItems, { product, quantity: 1 }]
 
     if (existingItem) {
       set({
         cartItems: cartItems.map((item) =>
           item.product.id === product.id ? { ...item, quantity: item.quantity + 1 } : item,
         ),
-        newCartItems: [...newCartItems, { product, quantity: 1 }],
+        newCartItems: updatedNewCartItems,
       })
     } else {
       set({
         cartItems: [...cartItems, { product, quantity: 1 }],
-        newCartItems: [...newCartItems, { product, quantity: 1 }]
+        newCartItems: updatedNewCartItems,
       })
     }
   },
@@ -75,11 +80,10 @@ export const useSalesStore = create<SalesStore>((set, get) => ({
         item.product.id === productId ? { ...item, quantity: item.quantity + 1 } : item
       )
 
-      // Add to newCartItems
-      const updatedNewCartItems = [...newCartItems, {
-        product: existingItem.product,
-        quantity: 1
-      }]
+      // Update newCartItems
+      const updatedNewCartItems = newCartItems.map((item) =>
+        item.product.id === productId ? { ...item, quantity: item.quantity + 1 } : item
+      )
 
       set({
         cartItems: updatedCartItems,
@@ -89,7 +93,7 @@ export const useSalesStore = create<SalesStore>((set, get) => ({
   },
 
   decreaseQuantity: (productId) => {
-    const { cartItems, newCartItems } = get()
+    const { cartItems } = get()
 
     const itemToDecrease = cartItems.find(item => item.product.id === productId && item.quantity > 1)
 
@@ -107,7 +111,6 @@ export const useSalesStore = create<SalesStore>((set, get) => ({
 
     set({
       cartItems: cartItems.filter((item) => item.product.id !== productId),
-      // Filter out any new items with this product ID
       newCartItems: newCartItems.filter((item) => item.product.id !== productId),
     })
   },
