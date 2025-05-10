@@ -12,7 +12,6 @@ export const useCategories = () => {
     } = useQuery({
         queryKey: ['categories'],
         queryFn: categoriesService.getAllCategories,
-        staleTime: 5 * 60 * 1000, // 5 minutes
     })
 
     const createCategory = useMutation({
@@ -69,7 +68,6 @@ export const useCategoryProducts = () => {
     } = useQuery({
         queryKey: ['categories-with-products'],
         queryFn: categoriesService.getAllCategories,
-        staleTime: 5 * 60 * 1000, // 5 minutes
     })
 
     const createCategory = useMutation({

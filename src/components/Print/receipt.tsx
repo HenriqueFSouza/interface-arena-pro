@@ -17,8 +17,6 @@ const Receipt = React.forwardRef(({
     showFooter = true
 }: ReceiptProps, ref: React.Ref<HTMLDivElement>) => {
 
-    console.log({ order, newItems })
-
     const totalPrice = newItems
         ? newItems.reduce((acc, item) => acc + item.product.price * item.quantity, 0)
         : order.items.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
