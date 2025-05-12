@@ -2,7 +2,6 @@
 
 import { CreatePaymentRequest, paymentsService } from "@/services/payments"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { toast } from "react-hot-toast"
 
 export const usePayments = (orderId?: string) => {
     const queryClient = useQueryClient()
@@ -22,11 +21,7 @@ export const usePayments = (orderId?: string) => {
             paymentsService.addPayment(orderId!, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['orderPayments', orderId] })
-            toast.success('Pagamento adicionado com sucesso')
             refetch()
-        },
-        onError: () => {
-            toast.error('Erro ao adicionar pagamento')
         }
     })
 
@@ -35,11 +30,7 @@ export const usePayments = (orderId?: string) => {
             paymentsService.removePayment(paymentId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['orderPayments', orderId] })
-            toast.success('Pagamento removido com sucesso')
             refetch()
-        },
-        onError: () => {
-            toast.error('Erro ao remover pagamento')
         }
     })
 
