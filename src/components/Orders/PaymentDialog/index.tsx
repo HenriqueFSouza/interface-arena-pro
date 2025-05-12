@@ -297,7 +297,7 @@ function PaymentDialogContent({ order, onClose }: PaymentDialogProps) {
     );
 }
 
-export default function PaymentDialog({ order }: PaymentDialogProps) {
+export default function PaymentDialog({ order }: Pick<PaymentDialogProps, 'order'>) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
