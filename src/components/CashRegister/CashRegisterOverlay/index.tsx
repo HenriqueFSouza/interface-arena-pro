@@ -21,7 +21,6 @@ export default function CashRegisterOverlay() {
         setIsOverlayOpen,
         currentCashRegister,
         expensesAndIncrements,
-        payments,
         getTotalSold,
         getExpectedAmount,
         getCashAmount,
