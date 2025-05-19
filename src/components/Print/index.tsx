@@ -2,7 +2,7 @@
 
 import { Order } from '@/@types/order';
 import { Button } from '@/components/ui/button';
-import { CartItem } from '@/lib/sales-store';
+import { CartItem } from '@/stores/sales-store';
 import { Printer } from 'lucide-react';
 import { useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
