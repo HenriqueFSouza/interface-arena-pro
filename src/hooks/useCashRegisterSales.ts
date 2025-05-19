@@ -7,14 +7,13 @@ export function useCashRegisterSales(cashRegisterId?: string) {
     const queryClient = useQueryClient()
 
     const { data, isLoading, error } = useQuery({
-        queryKey: [QUERY_KEY, cashRegisterId],
+        queryKey: [QUERY_KEY],
         queryFn: () => cashRegisterService.getSalesSummary(cashRegisterId!),
         enabled: !!cashRegisterId,
-        refetchOnWindowFocus: true,
     })
 
     const invalidateCashRegisterSales = () => {
-        queryClient.invalidateQueries({ queryKey: [QUERY_KEY, cashRegisterId] })
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEY] })
     }
 
     return {
