@@ -29,9 +29,7 @@ export function useCashRegister() {
     const invalidateCashRegister = () => {
         queryClient.invalidateQueries({ queryKey: [CASH_REGISTER_QUERY_KEY] })
         refetch().then((result) => {
-            if (result.data) {
-                setCurrentCashRegister(result.data)
-            }
+            setCurrentCashRegister(result.data ?? null)
         })
     }
 

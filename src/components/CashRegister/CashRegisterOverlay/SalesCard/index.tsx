@@ -5,20 +5,13 @@ import { useCashRegisterSales } from "@/hooks/useCashRegisterSales";
 import { formatDateTime, formatToBRL } from "@/utils/formaters";
 import { getPaymentMethodIcon } from "@/utils/payments";
 import { Dot, Loader2 } from "lucide-react";
-import { useEffect } from "react";
 
 export function SalesCard({ cashRegisterId }: { cashRegisterId?: string }) {
-    const { cashRegisterSales, isLoading, isStale, refetch } = useCashRegisterSales(cashRegisterId)
+    const { cashRegisterSales, isLoading } = useCashRegisterSales(cashRegisterId)
 
     const calculateTotalAmount = (payments: { paymentMethod: PaymentMethod; amount: string }[]) => {
         return payments.reduce((total, payment) => total + Number(payment.amount), 0);
     };
-
-    useEffect(() => {
-        if (isStale) {
-            refetch()
-        }
-    }, [isStale, refetch])
 
     return (
         <Card>
