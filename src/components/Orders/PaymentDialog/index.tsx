@@ -1,4 +1,5 @@
 import { Order } from "@/@types/order";
+import { PaymentMethod } from "@/@types/payment";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -24,7 +25,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { OrderPaymentProvider, useOrderPayment } from "@/contexts/OrderPaymentContext";
 import { useOrders } from "@/hooks/useOrders";
-import { PaymentMethod } from "@/services/payments";
 import { formatToBRL } from "@/utils/formaters";
 import { getPaymentMethodIcon, getPaymentMethodLabel } from "@/utils/payments";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
@@ -40,7 +40,7 @@ interface PaymentDialogProps {
 
 function PaymentDialogContent({ order, onClose }: PaymentDialogProps) {
     const [showConfirmation, setShowConfirmation] = useState(false);
-    const [newPaymentMethod, setNewPaymentMethod] = useState<PaymentMethod>("CASH");
+    const [newPaymentMethod, setNewPaymentMethod] = useState<PaymentMethod>(PaymentMethod.CASH);
     const [newPaymentAmount, setNewPaymentAmount] = useState("");
 
     const {
@@ -74,7 +74,7 @@ function PaymentDialogContent({ order, onClose }: PaymentDialogProps) {
         try {
             await addPayment(newPayment);
             setNewPaymentAmount("");
-            setNewPaymentMethod("CASH");
+            setNewPaymentMethod(PaymentMethod.CASH);
             toast.success("Pagamento adicionado com sucesso");
         } catch (error) {
             toast.error("Erro ao adicionar pagamento");

@@ -1,6 +1,6 @@
 "use client"
 
-import { useSalesStore } from "@/lib/sales-store"
+import { useSalesStore } from "@/stores/sales-store"
 import { useEffect } from "react"
 import CartSummary from "../CartSummary"
 import CategoryFilter from "../CategoryFilter"

@@ -1,5 +1,5 @@
 import { Order } from '@/@types/order';
-import { CartItem } from '@/lib/sales-store';
+import { CartItem } from '@/stores/sales-store';
 import { formatToBRL } from '@/utils/formaters';
 import React from 'react';
 

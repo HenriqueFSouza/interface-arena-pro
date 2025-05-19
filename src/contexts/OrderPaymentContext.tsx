@@ -1,8 +1,9 @@
 import { Order } from "@/@types/order";
+import { Payment } from "@/@types/payment";
 import { useDiscounts } from "@/hooks/useDiscounts";
 import { usePayments } from "@/hooks/usePayments";
 import { CreateDiscountRequest, Discount } from "@/services/discounts";
-import { CreatePaymentRequest, Payment } from "@/services/payments";
+import { CreatePaymentRequest } from "@/services/payments";
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 
 interface OrderPaymentContextData {

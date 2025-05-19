@@ -3,7 +3,7 @@
 import type { Order } from "@/@types/order"
 import PrintOrder from "@/components/Print"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useSalesStore } from "@/lib/sales-store"
+import { useSalesStore } from "@/stores/sales-store"
 import { formatToBRL } from "@/utils/formaters"
 import PaymentDialog from "../PaymentDialog"
 interface ClientOrderCardProps {
