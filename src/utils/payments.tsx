@@ -1,14 +1,15 @@
-import { PaymentMethod } from "@/services/payments";
+import { PaymentMethod } from "@/@types/payment";
+import { cn } from "@/lib/utils";
 import { Banknote, CreditCard, QrCode } from "lucide-react";
 
-export const getPaymentMethodIcon = (method: PaymentMethod) => {
+export const getPaymentMethodIcon = (method: PaymentMethod, className?: string) => {
     switch (method) {
         case "CASH":
-            return <Banknote className="w-4 h-4" />;
+            return <Banknote className={cn("w-4 h-4", className)} />;
         case "CARD":
-            return <CreditCard className="w-4 h-4" />;
+            return <CreditCard className={cn("w-4 h-4", className)} />;
         case "PIX":
-            return <QrCode className="w-4 h-4" />;
+            return <QrCode className={cn("w-4 h-4", className)} />;
     }
 };
 

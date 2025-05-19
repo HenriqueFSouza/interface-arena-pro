@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input"
 import { useProducts } from "@/hooks/useProducts"
-import { useSalesStore } from "@/lib/sales-store"
+import { useSalesStore } from "@/stores/sales-store"
 import { Search } from "lucide-react"
 import { useEffect, useState } from "react"
 import ProductCard from "../../Product/ProductCard"

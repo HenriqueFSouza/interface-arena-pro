@@ -1,15 +1,5 @@
+import { Payment, PaymentMethod } from '@/@types/payment';
 import { api } from '@/lib/api';
-
-export type PaymentMethod = "CASH" | "CARD" | "PIX";
-
-export interface Payment {
-    id: string;
-    orderId: string;
-    method: PaymentMethod;
-    amount: number;
-    createdAt: string;
-    updatedAt: string;
-}
 
 export interface CreatePaymentRequest {
     method: PaymentMethod;
