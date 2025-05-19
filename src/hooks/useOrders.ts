@@ -1,13 +1,17 @@
 'use client'
 
 import { OrderItem } from "@/@types/order"
+import { useCashRegister } from "@/hooks/useCashRegister"
+import { useCashRegisterSales } from "@/hooks/useCashRegisterSales"
 import { ordersService } from "@/services/orders"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { toast } from "react-hot-toast"
 
 export const useOrders = () => {
     const queryClient = useQueryClient()
+    const { invalidateCashRegister } = useCashRegister()
+    const { invalidateCashRegisterSales } = useCashRegisterSales()
 
     const [search, setSearch] = useState('')
 
@@ -46,6 +50,8 @@ export const useOrders = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['orders'] })
             refetch()
+            invalidateCashRegister()
+            invalidateCashRegisterSales()
             toast.success('Comanda finalizada com sucesso')
         },
         onError: () => {
@@ -82,18 +88,22 @@ export const useOrders = () => {
         order.clients[0].name.toLowerCase().includes(search.toLowerCase())
     )
 
+    const openOrdersSubTotal = useMemo(() => data?.reduce((acc, order) => acc + order.items.reduce((acc, item) => acc + item.price! * item.quantity, 0), 0), [data])
+
+
     return {
         orders: filteredOrders ?? [],
         isLoading: isLoading || isFetching,
         isPending: createOrder.isPending || addOrderItem.isPending || closeOrder.isPending || deleteOrder.isPending || removeOrderItem.isPending,
         search,
+        error,
+        openOrdersSubTotal: openOrdersSubTotal ?? 0,
         setSearch,
         createOrder: createOrder.mutate,
         addOrderItem: addOrderItem.mutate,
         closeOrder: closeOrder.mutate,
         deleteOrder: deleteOrder.mutate,
         removeOrderItem: removeOrderItem.mutate,
-        error,
     }
 }
 

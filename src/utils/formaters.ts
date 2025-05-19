@@ -28,4 +28,19 @@ export function parseFileName(filename: string): string {
     return `${lowerCaseName}.${extension}`
 }
 
+export function parseCurrencyString(value: string): number {
+    return Number(value.replace(/\D/g, "")) / 100
+}
+
+export function formatDateTime(date: string): string {
+    if (!date) return ''
+    return new Date(date).toLocaleString('pt-BR', {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+    })
+}
+
 
