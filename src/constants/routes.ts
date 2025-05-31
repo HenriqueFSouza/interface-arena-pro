@@ -1,4 +1,4 @@
-import { BarChart, ShoppingBag, ShoppingCart } from "lucide-react";
+import { BarChart, Package, ShoppingBag, ShoppingCart } from "lucide-react";
 
 export const routes = [
     {
@@ -10,6 +10,11 @@ export const routes = [
         label: "Produtos",
         href: "/products",
         icon: ShoppingCart,
+    },
+    {
+        label: "Estoque",
+        href: "/stock",
+        icon: Package,
     },
     {
         label: "Relatórios",
