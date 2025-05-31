@@ -1,11 +1,10 @@
 'use client'
 
 import { OpenCashRegisterDialog } from "@/components/CashRegister/OpenCashRegisterDialog"
-import { Input } from "@/components/ui/input"
+import { SearchInput } from "@/components/SearchInput"
 import { useCashRegister } from "@/hooks/useCashRegister"
 import { useOrders } from "@/hooks/useOrders"
 import { formatToBRL } from "@/utils/formaters"
-import { Search } from "lucide-react"
 import ClientOrderCard from "../ClientOrderCard"
 
 export default function ClientOrderList() {
@@ -40,16 +39,7 @@ export default function ClientOrderList() {
 
   return (
     <>
-      <div className="mb-4 relative bg-card rounded-md">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-        <Input
-          autoFocus
-          placeholder="Pesquisar cliente..."
-          className="pl-10 "
-          value={search}
-          onChange={handleSearch}
-        />
-      </div>
+      <SearchInput search={search} placeholder="Pesquisar comanda..." handleSearch={handleSearch} />
 
       {!noOrdersFound && <p className="text-sm text-muted-foreground mb-2">Subtotal: <strong className="text-neutral-900 font-bold text-base">{formatToBRL(openOrdersSubTotal)}</strong></p>}
 
