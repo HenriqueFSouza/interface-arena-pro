@@ -170,7 +170,6 @@ export default function NewProductForm({ id, defaultValues }: NewProductFormProp
       <StockItemSelector
         value={watch("stockProduct") || []}
         onChange={handleStockProductsChange}
-        label="Itens de Estoque"
       />
 
       {errors.stockProduct?.message && (
