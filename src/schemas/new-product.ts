@@ -8,7 +8,7 @@ export const newProductSchema = z.object({
     categoryId: z.string().min(1, {
         message: "Selecione uma categoria.",
     }),
-    imageUrl: z.string().nullable(),
+    imageUrl: z.string().optional().nullable(),
     stockProduct: z.array(z.object({
         stockId: z.string(),
         quantity: z.number(),

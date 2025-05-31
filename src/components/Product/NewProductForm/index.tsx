@@ -36,7 +36,7 @@ export default function NewProductForm({ id, defaultValues }: NewProductFormProp
       name: "",
       price: undefined,
       categoryId: "",
-      imageUrl: null,
+      imageUrl: undefined,
       stockProduct: [],
     },
   })
