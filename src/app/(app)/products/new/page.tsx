@@ -8,7 +8,7 @@ export default function NewProductPage() {
         <div className="container mx-auto py-8 px-4">
             <div className="mb-8">
                 <Link href="/products">
-                    <Button variant="ghost" className="p-0 h-auto text-lg">
+                    <Button variant="ghost" className="p-0 h-auto text-lg hover:scale-105 transition-all">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Voltar
                     </Button>

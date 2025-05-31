@@ -30,7 +30,7 @@ interface EditItemDialogProps {
 export function EditItemDialog({ item }: EditItemDialogProps) {
     const [open, setOpen] = useState(false)
     const { updateItem } = useStock()
-    const { invalidateStockHistory } = useStockHistory(item.id)
+    const { invalidateStockHistory } = useStockHistory()
 
     const defaultValues = {
         name: item.name,
@@ -54,8 +54,8 @@ export function EditItemDialog({ item }: EditItemDialogProps) {
         }, {
             onSuccess: () => {
                 setOpen(false)
-                toast.success('Item atualizado com sucesso!')
                 invalidateStockHistory()
+                toast.success('Item atualizado com sucesso!')
             },
             onError: () => {
                 toast.error('Erro ao atualizar o item!')

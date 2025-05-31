@@ -1,12 +1,14 @@
 "use client"
 
+import { StockItemSelector } from "@/components/StockItemSelector"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import UploadInput from "@/components/UploadInput"
 import { useCategories } from "@/hooks/useCategories"
-import { newProductSchema } from "@/schemas/new-product"
+import { useGetProductById } from "@/hooks/useGetProductById"
+import { NewProductFormData, newProductSchema } from "@/schemas/new-product"
 import { productService } from "@/services/product"
 import { uploadService } from "@/services/upload"
 import { parseFileName } from "@/utils/formaters"
@@ -16,10 +18,6 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
-import { z } from "zod"
-
-type NewProductFormData = z.infer<typeof newProductSchema>
-
 interface NewProductFormProps {
   id?: string
   defaultValues?: NewProductFormData
@@ -30,6 +28,7 @@ export default function NewProductForm({ id, defaultValues }: NewProductFormProp
   const { categories, isLoading: isCategoriesLoading, invalidateCategories } = useCategories()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
+  const { invalidate: invalidateProduct } = useGetProductById(id)
 
   const { register, handleSubmit, formState: { errors, isSubmitting }, setValue, watch } = useForm<NewProductFormData>({
     resolver: zodResolver(newProductSchema),
@@ -37,7 +36,8 @@ export default function NewProductForm({ id, defaultValues }: NewProductFormProp
       name: "",
       price: undefined,
       categoryId: "",
-      imageUrl: undefined,
+      imageUrl: null,
+      stockProduct: [],
     },
   })
 
@@ -74,7 +74,6 @@ export default function NewProductForm({ id, defaultValues }: NewProductFormProp
 
   const { mutate: createProduct, isPending: isCreating } = useMutation({
     mutationFn: async (values: NewProductFormData) => {
-      // Handle file upload if needed
       const updatedValues = await handleFileUpload(values);
       return productService.createProduct(updatedValues);
     },
@@ -90,7 +89,6 @@ export default function NewProductForm({ id, defaultValues }: NewProductFormProp
 
   const { mutate: updateProduct, isPending: isUpdating } = useMutation({
     mutationFn: async (values: NewProductFormData) => {
-      // Handle file upload if needed
       const updatedValues = await handleFileUpload(values);
       return productService.updateProduct(id!, updatedValues);
     },
@@ -98,6 +96,7 @@ export default function NewProductForm({ id, defaultValues }: NewProductFormProp
       toast.success("Produto atualizado com sucesso")
       router.push("/products")
       invalidateCategories()
+      invalidateProduct(id!)
     },
     onError: () => {
       toast.error("Erro ao atualizar produto")
@@ -115,8 +114,12 @@ export default function NewProductForm({ id, defaultValues }: NewProductFormProp
   const imageValue = watch("imageUrl") || undefined
   const isLoading = isSubmitting || isCreating || isUpdating || isUploading
 
+  const handleStockProductsChange = (stockProducts: { stockId: string, quantity: number }[]) => {
+    setValue("stockProduct", stockProducts)
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 [&_input]:bg-white">
       <Input
         label="Nome do Produto"
         placeholder="Digite o nome do produto"
@@ -164,6 +167,16 @@ export default function NewProductForm({ id, defaultValues }: NewProductFormProp
         )}
       </div>
 
+      <StockItemSelector
+        value={watch("stockProduct") || []}
+        onChange={handleStockProductsChange}
+        label="Itens de Estoque"
+      />
+
+      {errors.stockProduct?.message && (
+        <p className="text-red-500 text-sm">{errors.stockProduct.message}</p>
+      )}
+
       <div className="flex flex-col gap-1.5 h-fit">
         <label className="text-sm text-neutral-700 font-medium leading-none">
           Imagem do Produto
@@ -171,7 +184,7 @@ export default function NewProductForm({ id, defaultValues }: NewProductFormProp
         <UploadInput
           value={imageValue}
           onChange={(value) => setValue("imageUrl", value)}
-          onRemove={() => setValue("imageUrl", undefined)}
+          onRemove={() => setValue("imageUrl", null)}
           onFileSelect={setSelectedFile}
           disabled={isLoading}
           loading={isUploading}
@@ -182,7 +195,7 @@ export default function NewProductForm({ id, defaultValues }: NewProductFormProp
       </div>
 
       <Button type="submit" className="w-full" disabled={isLoading} isLoading={isLoading}>
-        {isEditing ? "Editar Produto" : "Criar Produto"}
+        {isEditing ? "Confirmar Edição" : "Criar Produto"}
       </Button>
     </form>
   )

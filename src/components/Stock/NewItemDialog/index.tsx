@@ -150,7 +150,7 @@ export function NewItemDialog() {
                                     render={({ field }) => (
                                         <FormItem>
                                             <ExpenseSelector
-                                                label="Despesa (Opcional)"
+                                                label="Despesa"
                                                 value={field.value}
                                                 onChange={(expense) => field.onChange(expense.id)}
                                             />

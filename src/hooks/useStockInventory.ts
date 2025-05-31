@@ -1,12 +1,11 @@
 import { stockService } from "@/services/stock"
 import { useStockInventoryStore } from "@/stores/stock-inventory-store"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import toast from "react-hot-toast"
-import { STOCK_QUERY_KEY } from "./useStock"
-import { STOCK_HISTORY_QUERY_KEY } from "./useStockHistory"
+import { useStock } from "./useStock"
+import { useStockHistory } from "./useStockHistory"
 
 export function useStockInventory() {
-    const queryClient = useQueryClient()
     const {
         isInventoryMode,
         setIsInventoryMode,
@@ -20,10 +19,14 @@ export function useStockInventory() {
         getInventoryData
     } = useStockInventoryStore()
 
+    const { invalidateAndRefetch: invalidateStock } = useStock()
+    const { invalidateHistory } = useStockHistory()
+
     const updateInventory = useMutation({
         mutationFn: stockService.updateByInventory,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: [STOCK_QUERY_KEY, STOCK_HISTORY_QUERY_KEY] })
+            invalidateStock()
+            invalidateHistory()
             resetInventory()
             toast.success('Inventário atualizado com sucesso!')
         },

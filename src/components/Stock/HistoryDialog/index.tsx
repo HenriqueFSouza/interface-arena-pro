@@ -23,14 +23,14 @@ import { useStockHistory } from "@/hooks/useStockHistory"
 import { getHistoryTypeLabel, getUnitMeasureLabel } from "@/utils"
 import { formatDateTime, formatToBRL } from "@/utils/formaters"
 import { History } from "lucide-react"
-import { useState } from "react"
 interface HistoryDialogProps {
     itemId: string
     itemName: string
+    open: boolean
+    onOpenChange: (open: boolean) => void
 }
 
-export function HistoryDialog({ itemId, itemName }: HistoryDialogProps) {
-    const [open, setOpen] = useState(false)
+export function HistoryDialog({ itemId, itemName, open, onOpenChange }: HistoryDialogProps) {
     const { history, isLoading } = useStockHistory(itemId, {
         enabled: !!itemId && open,
     })
@@ -42,7 +42,7 @@ export function HistoryDialog({ itemId, itemName }: HistoryDialogProps) {
     }
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogTrigger asChild>
                 <Button
                     variant="ghost"
@@ -63,10 +63,10 @@ export function HistoryDialog({ itemId, itemName }: HistoryDialogProps) {
                             <TableRow>
                                 <TableHead>Data</TableHead>
                                 <TableHead>Tipo</TableHead>
-                                <TableHead className="text-right">Saldo Inicial</TableHead>
-                                <TableHead className="text-right">Variação</TableHead>
-                                <TableHead className="text-right">Saldo Final</TableHead>
-                                <TableHead className="text-right">Valor Unitário</TableHead>
+                                <TableHead className="text-center">Saldo Inicial</TableHead>
+                                <TableHead className="text-center">Variação</TableHead>
+                                <TableHead className="text-center">Saldo Final</TableHead>
+                                <TableHead className="text-center">Valor Unitário</TableHead>
                                 <TableHead>Observação</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -87,12 +87,12 @@ export function HistoryDialog({ itemId, itemName }: HistoryDialogProps) {
                                                 {formatDateTime(entry.createdAt)}
                                             </TableCell>
                                             <TableCell>{getHistoryTypeLabel(entry.type)}</TableCell>
-                                            <TableCell className="text-right">{entry.initialQuantity} {getUnitMeasureLabel(entry.stock.unitMeasure)}</TableCell>
+                                            <TableCell className="text-center">{entry.initialQuantity} {getUnitMeasureLabel(entry.stock.unitMeasure)}</TableCell>
                                             <TableCell className="text-center">
                                                 {getAmountRange(entry.initialQuantity, entry.finalQuantity)}
                                             </TableCell>
-                                            <TableCell className="text-right">{entry.finalQuantity} {getUnitMeasureLabel(entry.stock.unitMeasure)}</TableCell>
-                                            <TableCell className="text-right">{formatToBRL(entry.unitPrice) || "-"}</TableCell>
+                                            <TableCell className="text-center">{entry.finalQuantity} {getUnitMeasureLabel(entry.stock.unitMeasure)}</TableCell>
+                                            <TableCell className="text-center">{entry.unitPrice ? formatToBRL(entry.unitPrice) : "-"}</TableCell>
                                             <TableCell>{entry.description || "-"}</TableCell>
                                         </TableRow>
                                     ))}

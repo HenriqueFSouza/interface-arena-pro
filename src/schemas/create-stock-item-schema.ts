@@ -14,7 +14,9 @@ export const createStockItemSchema = z.object({
     totalPrice: z.coerce.number().min(0.01, {
         message: "O valor gasto deve ser maior que zero.",
     }),
-    expenseId: z.string().optional(),
+    expenseId: z.string({
+        required_error: "Selecione uma despesa.",
+    }),
 })
 
 export type CreateStockItemSchema = z.infer<typeof createStockItemSchema>

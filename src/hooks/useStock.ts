@@ -8,7 +8,7 @@ export const STOCK_QUERY_KEY = 'stock'
 export function useStock() {
     const queryClient = useQueryClient()
 
-    const { data: items = [], isLoading, refetch } = useQuery({
+    const { data: items = [], isLoading, dataUpdatedAt, refetch } = useQuery({
         queryKey: [STOCK_QUERY_KEY],
         queryFn: stockService.findAll,
     })
@@ -54,5 +54,7 @@ export function useStock() {
         createItem: createItem.mutate,
         updateItem: updateItem.mutate,
         removeItem: removeItem.mutate,
+        invalidateAndRefetch,
+        lastUpdatedAt: new Date(dataUpdatedAt)
     }
 } 

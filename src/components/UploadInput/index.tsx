@@ -94,8 +94,8 @@ export default function UploadInput({
                     <label
                         htmlFor="imageUpload"
                         className={cn(
-                            "flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-md cursor-pointer bg-muted/50 transition-colors",
-                            "hover:bg-muted/70 hover:border-neutral-300",
+                            "flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-md cursor-pointer bg-white transition-colors",
+                            "hover:bg-white/70 hover:border-neutral-300",
                             (disabled || isLoading) && "opacity-50 cursor-not-allowed",
                         )}
                     >

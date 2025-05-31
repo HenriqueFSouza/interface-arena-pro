@@ -1,13 +1,11 @@
 import { expenseService } from "@/services/expense-service"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
 
 export function useExpenses() {
-    const [search, setSearch] = useState("")
     const queryClient = useQueryClient()
 
     const { data: expenses = [], isLoading, isFetching, refetch } = useQuery({
-        queryKey: ["expenses", search],
+        queryKey: ["expenses"],
         queryFn: () => expenseService.list(),
         staleTime: 1000 * 60 * 20 // 20 minutes
     })
@@ -23,8 +21,6 @@ export function useExpenses() {
     return {
         expenses,
         isLoading: isLoading || isFetching,
-        search,
-        setSearch,
         createExpense,
         isCreating
     }
