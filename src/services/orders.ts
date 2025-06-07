@@ -22,7 +22,7 @@ export const ordersService = {
         return response.data
     },
 
-    async addOrderItem(orderId: string, items: Omit<OrderItem, 'id' | 'product'>[]): Promise<OrderItem[]> {
+    async saveOrderItems(orderId: string, items: Omit<OrderItem, 'id' | 'product'>[]): Promise<OrderItem[]> {
         const response = await api.post(`/orders/${orderId}/items`, {
             items
         })

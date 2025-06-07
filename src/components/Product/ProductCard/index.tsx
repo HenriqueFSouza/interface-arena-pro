@@ -23,21 +23,21 @@ interface ProductCardProps {
 export default function ProductCard({ product, onDelete, className, isEditable, onSelect }: ProductCardProps) {
     const router = useRouter()
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-    const { newCartItems } = useSalesStore()
+    const { getNewQuantityForProduct, cartItems } = useSalesStore()
 
     const handleEdit = () => {
         isEditable && router.push(`/products/${product.id}`)
     }
 
-    const isProductSelectedInNewItems = useMemo(() => newCartItems.find(item => item.product.id === product.id), [newCartItems, product.id])
+    const newQuantity = useMemo(() => getNewQuantityForProduct(product.id), [getNewQuantityForProduct, cartItems])
 
     return (
         <div className="relative">
             {/* New Item Quantity Counter Badge */}
-            {isProductSelectedInNewItems && onSelect && (
-                <Badge className="absolute -top-1 -right-2 z-50 bg-blue-500 hover:bg-blue-600 px-2">{
-                    isProductSelectedInNewItems.quantity
-                }</Badge>
+            {newQuantity > 0 && onSelect && (
+                <Badge className="absolute -top-1 -right-2 z-50 bg-blue-500 hover:bg-blue-600 px-2">
+                    {newQuantity}
+                </Badge>
             )}
 
             {/* Card */}

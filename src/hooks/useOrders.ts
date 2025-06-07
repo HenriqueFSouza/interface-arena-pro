@@ -32,9 +32,9 @@ export const useOrders = () => {
         }
     })
 
-    const addOrderItem = useMutation({
+    const saveOrderItems = useMutation({
         mutationFn: (params: { orderId: string, items: Omit<OrderItem, 'id' | 'product'>[] }) =>
-            ordersService.addOrderItem(params.orderId, params.items),
+            ordersService.saveOrderItems(params.orderId, params.items),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['orders'] })
             refetch()
@@ -94,13 +94,13 @@ export const useOrders = () => {
     return {
         orders: filteredOrders ?? [],
         isLoading: isLoading || isFetching,
-        isPending: createOrder.isPending || addOrderItem.isPending || closeOrder.isPending || deleteOrder.isPending || removeOrderItem.isPending,
+        isPending: createOrder.isPending || saveOrderItems.isPending || closeOrder.isPending || deleteOrder.isPending || removeOrderItem.isPending,
         search,
         error,
         openOrdersSubTotal: openOrdersSubTotal ?? 0,
         setSearch,
         createOrder: createOrder.mutate,
-        addOrderItem: addOrderItem.mutate,
+        saveOrderItems: saveOrderItems.mutate,
         closeOrder: closeOrder.mutate,
         deleteOrder: deleteOrder.mutate,
         removeOrderItem: removeOrderItem.mutate,
