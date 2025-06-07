@@ -15,7 +15,6 @@ export default function CartSummary() {
   const {
     selectedClient,
     cartItems,
-    newCartItems,
     increaseQuantity,
     decreaseQuantity,
     removeFromCart,
@@ -23,9 +22,12 @@ export default function CartSummary() {
     getTotalPrice,
     setIsOverlayOpen,
     setSelectedClient,
+    getCartChangesForSave,
+    getNewQuantityForProduct,
+    hasChanges,
   } = useSalesStore()
 
-  const { orders, addOrderItem, isPending, removeOrderItem } = useOrders()
+  const { orders, saveOrderItems, isPending, removeOrderItem } = useOrders()
   const { printItem, printItemRef } = usePrintItem()
 
   const handleCloseOverlay = () => {
@@ -40,11 +42,12 @@ export default function CartSummary() {
 
   const handleMakeOrder = async () => {
     try {
-      // Only send new items to the backend
-      if (newCartItems.length > 0) {
-        addOrderItem({
+      const changedItems = getCartChangesForSave()
+
+      if (changedItems.length > 0) {
+        saveOrderItems({
           orderId: selectedClient.orderId,
-          items: newCartItems.map((item) => ({
+          items: changedItems.map((item) => ({
             productId: item.product.id,
             quantity: item.quantity,
             orderClientId: selectedClient.id,
@@ -90,52 +93,60 @@ export default function CartSummary() {
       ) : (
         <ScrollArea className="flex-1">
           <div className="p-2 space-y-4">
-            {cartItems.map((item) => (
-              <div key={item.product.id} className="space-y-1">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-medium max-w-[170px] truncate">{item.product.name}</h3>
-                    <p className="text-sm text-muted-foreground">{formatToBRL(item.product.price)} cada</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold">{formatToBRL(item.product.price * item.quantity)}</p>
-                  </div>
-                </div>
+            {cartItems.map((item) => {
+              const newQuantity = getNewQuantityForProduct(item.product.id)
+              const hasNewQuantity = newQuantity > 0
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="p-0 border-none"
-                      onClick={() => decreaseQuantity(item.product.id)}
-                      disabled={item.quantity <= 1}
-                    >
-                      <Minus className="size-4" />
-                    </Button>
-                    <span className="w-8 text-center">{item.quantity}</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="p-0 border-none"
-                      onClick={() => increaseQuantity(item.product.id)}
-                    >
-                      <Plus className="size-4" />
-                    </Button>
+              return (
+                <div key={item.product.id} className="space-y-1">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-medium max-w-[170px] truncate">{item.product.name}</h3>
+                      <p className="text-sm text-muted-foreground">{formatToBRL(item.product.price)} cada</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold">{formatToBRL(item.product.price * item.quantity)}</p>
+                    </div>
                   </div>
 
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="p-2 h-8 w-8 text-destructive"
-                    onClick={() => handleDeleteItem(item.id!)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="p-0 border-none"
+                        onClick={() => decreaseQuantity(item.product.id)}
+                        disabled={item.quantity <= 1}
+                      >
+                        <Minus className="size-4" />
+                      </Button>
+                      <span className="w-8 text-center">{item.quantity}</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="p-0 border-none"
+                        onClick={() => increaseQuantity(item.product.id)}
+                      >
+                        <Plus className="size-4" />
+                      </Button>
+                    </div>
+
+                    {/* Só mostra o botão de deletar para itens que não são novos */}
+                    {!hasNewQuantity && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="p-2 h-8 w-8 text-destructive"
+                        onClick={() => handleDeleteItem(item.id!)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                  <Separator />
                 </div>
-                <Separator />
-              </div>
-            ))}
+              )
+            })}
           </div>
         </ScrollArea>
       )}
@@ -145,8 +156,14 @@ export default function CartSummary() {
           <span className="font-medium">Valor total</span>
           <span className="text-xl font-bold">{formatToBRL(getTotalPrice())}</span>
         </div>
-        <Button className="w-full" size="lg" disabled={cartItems.length === 0 || newCartItems.length === 0} onClick={handleMakeOrder} isLoading={isPending}>
-          Fazer pedido
+        <Button
+          className="w-full"
+          size="lg"
+          disabled={cartItems.length === 0 || !hasChanges()}
+          onClick={handleMakeOrder}
+          isLoading={isPending}
+        >
+          Salvar alterações
         </Button>
         <DeleteOrderDialog
           orderId={selectedClient.orderId}
@@ -156,7 +173,7 @@ export default function CartSummary() {
       </div>
 
       <div className="hidden">
-        <Receipt ref={printItemRef} order={order!} newItems={newCartItems} />
+        <Receipt ref={printItemRef} order={order!} newItems={getCartChangesForSave()} />
       </div>
     </div>
   )
