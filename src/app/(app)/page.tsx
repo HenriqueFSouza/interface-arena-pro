@@ -3,6 +3,7 @@ import CashRegisterOpenButton from "@/components/CashRegister/OpenButton"
 import ClientOrderList from "@/components/Orders/ClientOrdersList"
 import NewOrderDialog from "@/components/Orders/NewOrderDialog"
 import ProductsOverlay from "@/components/Orders/ProductsOverlay"
+import QuickSaleDialog from "@/components/Orders/QuickSaleDialog"
 
 export default function OrdersPage() {
   return (
@@ -14,6 +15,7 @@ export default function OrdersPage() {
         </div>
         <div className="flex gap-4">
           <CashRegisterOpenButton />
+          <QuickSaleDialog />
           <NewOrderDialog />
         </div>
       </div>

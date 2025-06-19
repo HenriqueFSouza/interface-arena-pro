@@ -10,7 +10,7 @@ interface UseProductsOptions {
 
 export const useProducts = (options: UseProductsOptions = {}) => {
     const queryClient = useQueryClient()
-    const { categories } = useCategories()
+    const { categories, invalidateCategories } = useCategories()
     const { categoryId, search } = options
 
     const params: { categoryId?: string; search?: string } = {}
@@ -29,7 +29,6 @@ export const useProducts = (options: UseProductsOptions = {}) => {
             const addParams = Object.keys(params).length > 0 ? params : undefined
             return await productService.getAllProducts(addParams)
         },
-        staleTime: 5 * 60 * 1000, // 5 minutes
         enabled: categories.length > 0
     })
 
@@ -37,7 +36,7 @@ export const useProducts = (options: UseProductsOptions = {}) => {
         mutationFn: productService.createProduct,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] })
-            queryClient.invalidateQueries({ queryKey: ['categories-with-products'] })
+            invalidateCategories()
         }
     })
 
@@ -46,7 +45,7 @@ export const useProducts = (options: UseProductsOptions = {}) => {
             productService.updateProduct(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] })
-            queryClient.invalidateQueries({ queryKey: ['categories-with-products'] })
+            invalidateCategories()
         }
     })
 
@@ -54,7 +53,7 @@ export const useProducts = (options: UseProductsOptions = {}) => {
         mutationFn: productService.deleteProduct,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] })
-            queryClient.invalidateQueries({ queryKey: ['categories-with-products'] })
+            invalidateCategories()
         }
     })
 
