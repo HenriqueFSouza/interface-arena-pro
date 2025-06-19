@@ -10,8 +10,6 @@ import {
     DialogTrigger
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
 import {
     Tooltip,
     TooltipContent,
@@ -24,16 +22,17 @@ import { newOrderSchema, type NewOrderFormData } from "@/schemas/new-order"
 import { useSalesStore } from "@/stores/sales-store"
 import { formatPhoneNumber, formatToBRL } from "@/utils/formaters"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Minus, Plus, Trash2 } from "lucide-react"
+import { Plus } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { CartItens } from "../CartSummary"
 import CategoryFilter from "../CategoryFilter"
 import OrderProductsList from "../OrderProductsList"
 
 export default function NewOrderDialog() {
     const [open, setOpen] = useState(false)
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-    const { cartItems, removeFromCart, increaseQuantity, decreaseQuantity, getTotalPrice, clearCart } = useSalesStore()
+    const { cartItems, getTotalPrice, clearCart } = useSalesStore()
     const { isPending, createOrder } = useOrders()
     const { isOpen: isCashRegisterOpen } = useCashRegister()
 
@@ -164,62 +163,7 @@ export default function NewOrderDialog() {
                                                 )}
                                             </div>
 
-                                            {cartItems.length === 0 ? (
-                                                <div className="flex-1 flex items-center justify-center p-4 text-center text-muted-foreground text-sm">
-                                                    Nenhum item adicionado. Selecione produtos do painel esquerdo.
-                                                </div>
-                                            ) : (
-                                                <ScrollArea className="flex-1 rounded-md p-2 bg-neutral-100">
-                                                    <div className="space-y-3">
-                                                        {cartItems.map((item) => (
-                                                            <div key={item.product.id} className="space-y-2">
-                                                                <div className="flex justify-between items-start">
-                                                                    <div>
-                                                                        <h3 className="font-medium text-sm">{item.product.name}</h3>
-                                                                        <p className="text-xs text-muted-foreground">{formatToBRL(item.product.price)} cada</p>
-                                                                    </div>
-                                                                    <div className="text-right">
-                                                                        <p className="font-bold text-sm">{formatToBRL(item.product.price * item.quantity)}</p>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="flex items-center justify-between">
-                                                                    <div className="flex items-center space-x-1">
-                                                                        <Button
-                                                                            variant="outline"
-                                                                            size="sm"
-                                                                            className="p-1 h-6 w-6"
-                                                                            onClick={() => decreaseQuantity(item.product.id)}
-                                                                            disabled={item.quantity <= 1}
-                                                                        >
-                                                                            <Minus className="h-3 w-3" />
-                                                                        </Button>
-                                                                        <span className="w-6 text-center text-sm">{item.quantity}</span>
-                                                                        <Button
-                                                                            variant="outline"
-                                                                            size="sm"
-                                                                            className="p-1 h-6 w-6"
-                                                                            onClick={() => increaseQuantity(item.product.id)}
-                                                                        >
-                                                                            <Plus className="h-3 w-3" />
-                                                                        </Button>
-                                                                    </div>
-
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="sm"
-                                                                        className="p-1 h-6 w-6 text-destructive"
-                                                                        onClick={() => removeFromCart(item.product.id)}
-                                                                    >
-                                                                        <Trash2 className="h-3 w-3" />
-                                                                    </Button>
-                                                                </div>
-                                                                <Separator />
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </ScrollArea>
-                                            )}
+                                            <CartItens />
 
                                             <div className="pt-3 mt-2">
                                                 <div className="flex justify-between items-center mb-4">
