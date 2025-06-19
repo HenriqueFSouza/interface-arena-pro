@@ -6,24 +6,20 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { useOrders } from "@/hooks/useOrders"
-import { useSalesStore } from "@/stores/sales-store"
+import { CartItem, useSalesStore } from "@/stores/sales-store"
 import { formatToBRL } from "@/utils/formaters"
-import { Minus, Plus, Trash2, X } from "lucide-react"
+import { Minus, Plus, ShoppingCart, Trash2, X } from "lucide-react"
 import DeleteOrderDialog from "../DeleteOrderDialog"
 
 export default function CartSummary() {
   const {
     selectedClient,
     cartItems,
-    increaseQuantity,
-    decreaseQuantity,
-    removeFromCart,
     clearCart,
     getTotalPrice,
     setIsOverlayOpen,
     setSelectedClient,
     getCartChangesForSave,
-    getNewQuantityForProduct,
     hasChanges,
   } = useSalesStore()
 
@@ -86,9 +82,55 @@ export default function CartSummary() {
         </p>
       </div>
 
+      <CartItens onDeleteItem={handleDeleteItem} />
+
+      <div className="p-4 border-t bg-muted">
+        <div className="flex justify-between items-center mb-4">
+          <span className="font-medium">Valor total</span>
+          <span className="text-xl font-bold">{formatToBRL(getTotalPrice())}</span>
+        </div>
+        <Button
+          className="w-full"
+          size="lg"
+          disabled={cartItems.length === 0 || !hasChanges()}
+          onClick={handleMakeOrder}
+          isLoading={isPending}
+        >
+          Salvar alterações
+        </Button>
+        <DeleteOrderDialog
+          orderId={selectedClient.orderId}
+          clientName={selectedClient.name}
+          onSuccess={handleCloseOverlay}
+        />
+      </div>
+
+      <div className="hidden">
+        <Receipt ref={printItemRef} order={order!} newItems={getCartChangesForSave()} />
+      </div>
+    </div>
+  )
+}
+
+export const CartItens = ({ onDeleteItem }: { onDeleteItem?: (id: string) => void }) => {
+  const { cartItems, getNewQuantityForProduct, decreaseQuantity, increaseQuantity, removeFromCart } = useSalesStore()
+
+  const handleDeleteItem = (item: CartItem) => {
+    if (onDeleteItem) {
+      onDeleteItem(item.id!)
+    } else {
+      removeFromCart(item.product.id)
+    }
+  }
+
+
+  return (
+    <>
       {cartItems.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center p-4 text-center text-muted-foreground">
-          Nenhum item adicionado ainda. Selecione produtos do painel esquerdo.
+        <div className="flex-1 flex flex-col items-center justify-center p-4 text-center text-muted-foreground">
+          <ShoppingCart className="h-12 w-12 mb-2 opacity-50" />
+          <p>Carrinho vazio</p>
+          <p className="text-xs">Selecione produtos do painel esquerdo.</p>
         </div>
       ) : (
         <ScrollArea className="flex-1">
@@ -96,6 +138,8 @@ export default function CartSummary() {
             {cartItems.map((item) => {
               const newQuantity = getNewQuantityForProduct(item.product.id)
               const hasNewQuantity = newQuantity > 0
+
+              const shouldShowDeleteButton = onDeleteItem ? !hasNewQuantity : true
 
               return (
                 <div key={item.product.id} className="space-y-1">
@@ -132,12 +176,12 @@ export default function CartSummary() {
                     </div>
 
                     {/* Só mostra o botão de deletar para itens que não são novos */}
-                    {!hasNewQuantity && (
+                    {shouldShowDeleteButton && (
                       <Button
                         variant="ghost"
                         size="sm"
                         className="p-2 h-8 w-8 text-destructive"
-                        onClick={() => handleDeleteItem(item.id!)}
+                        onClick={() => handleDeleteItem(item)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -150,31 +194,6 @@ export default function CartSummary() {
           </div>
         </ScrollArea>
       )}
-
-      <div className="p-4 border-t bg-muted">
-        <div className="flex justify-between items-center mb-4">
-          <span className="font-medium">Valor total</span>
-          <span className="text-xl font-bold">{formatToBRL(getTotalPrice())}</span>
-        </div>
-        <Button
-          className="w-full"
-          size="lg"
-          disabled={cartItems.length === 0 || !hasChanges()}
-          onClick={handleMakeOrder}
-          isLoading={isPending}
-        >
-          Salvar alterações
-        </Button>
-        <DeleteOrderDialog
-          orderId={selectedClient.orderId}
-          clientName={selectedClient.name}
-          onSuccess={handleCloseOverlay}
-        />
-      </div>
-
-      <div className="hidden">
-        <Receipt ref={printItemRef} order={order!} newItems={getCartChangesForSave()} />
-      </div>
-    </div>
+    </>
   )
 }
