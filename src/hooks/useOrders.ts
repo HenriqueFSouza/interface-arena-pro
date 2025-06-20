@@ -88,7 +88,7 @@ export const useOrders = () => {
         order.clients[0].name.toLowerCase().includes(search.toLowerCase())
     )
 
-    const openOrdersSubTotal = useMemo(() => data?.reduce((acc, order) => acc + order.items.reduce((acc, item) => acc + item.price! * item.quantity, 0), 0), [data])
+    const openOrdersSubTotal = useMemo(() => data?.reduce((acc, order) => acc + order.items.reduce((acc, item) => acc + item.product?.price * item.quantity, 0), 0), [data])
 
 
     return {
