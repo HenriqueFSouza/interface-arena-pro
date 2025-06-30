@@ -1,10 +1,16 @@
-export const formatToBRL = (value: string | number) => {
-    if (!value) return 'R$ 0,00'
+export const formatToBRL = (value: string | number, clean?: boolean) => {
+    if (!value) return clean ? '0,00' : 'R$ 0,00'
 
-    return new Intl.NumberFormat('pt-BR', {
+    const formattedValue = new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL'
     }).format(Number(value))
+
+    if (clean) {
+        return formattedValue.replace('R$', '')
+    }
+
+    return formattedValue
 }
 
 export function formatPhoneNumber(value: string): string {

@@ -34,6 +34,7 @@ interface SalesStore {
   // Novas funções para calcular mudanças
   getNewQuantityForProduct: (productId: string) => number
   getCartChangesForSave: () => CartItem[]
+  getCartChangesForTicketPrint: () => CartItem[]
   hasChanges: () => boolean
 }
 
@@ -150,6 +151,26 @@ export const useSalesStore = create<SalesStore>((set, get) => ({
     })
 
     return itemsToSave
+  },
+
+  getCartChangesForTicketPrint: () => {
+    const { getCartChangesForSave, getNewQuantityForProduct } = get()
+    const itemsToPrint: CartItem[] = []
+
+    const changes = getCartChangesForSave()
+
+    changes.forEach(currentItem => {
+      const newQuantity = getNewQuantityForProduct(currentItem.product.id)
+
+      if (newQuantity > 0) {
+        itemsToPrint.push({
+          ...currentItem,
+          quantity: newQuantity
+        })
+      }
+    })
+
+    return itemsToPrint
   },
 
   hasChanges: () => {

@@ -7,9 +7,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useOrderPayment } from "@/contexts/OrderPaymentContext";
+import { usePrinter } from "@/hooks/usePrinter";
 import { formatToBRL } from "@/utils/formaters";
 import { getPaymentMethodIcon, getPaymentMethodLabel } from "@/utils/payments";
-import { Banknote, CreditCard, QrCode, Trash2, Wallet } from "lucide-react";
+import { Banknote, CreditCard, Printer, QrCode, Trash2, Wallet } from "lucide-react";
 import { ReactNode, useState } from "react";
 import toast from "react-hot-toast";
 import { DiscountSection } from "./DiscountSection";
@@ -33,7 +34,7 @@ export default function PaymentContent({
 }: PaymentContentProps) {
     const [newPaymentMethod, setNewPaymentMethod] = useState<PaymentMethod>(PaymentMethod.CASH);
     const [newPaymentAmount, setNewPaymentAmount] = useState("");
-
+    const { printOrder, isPrinting } = usePrinter()
     const {
         payments,
         isLoading,
@@ -78,6 +79,11 @@ export default function PaymentContent({
             toast.error("Erro ao remover pagamento");
         }
     };
+
+    const handlePrint = async () => {
+        if (!order) return
+        await printOrder({ order, options: { shouldCallFallback: true } })
+    }
 
     return (
         <div className="h-full flex flex-1 gap-4 overflow-hidden">
@@ -179,7 +185,21 @@ export default function PaymentContent({
 
             {/* Right Panel - Order Items (Read Only) */}
             <div className="w-1/2 flex flex-col">
-                <h3 className="text-lg font-semibold mb-2">Itens do Pedido</h3>
+                <div className="flex justify-between items-baseline">
+                    <h3 className="text-lg font-semibold mb-2">Itens do Pedido</h3>
+                    <Button
+                        type="button"
+                        onClick={handlePrint}
+                        size="sm"
+                        variant="ghost"
+                        disabled={isPrinting}
+                        isLoading={isPrinting}
+                        className="gap-2 mr-4"
+                    >
+                        <Printer className="h-4 w-4" />
+                        Imprimir Pedido
+                    </Button>
+                </div>
 
                 <ScrollArea className="flex-1 border rounded-md p-4">
                     {order?.items.map((item) => (

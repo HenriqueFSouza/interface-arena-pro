@@ -1,24 +1,14 @@
 import { PaymentMethod } from "@/@types/payment"
-import CashRegisterReport from "@/components/Print/cash-register-report"
 import { Button } from "@/components/ui/button"
+import { usePrinter } from "@/hooks/usePrinter"
 import { useCashRegisterStore } from "@/stores/cash-register-store"
 import { formatDateTime, formatToBRL } from "@/utils/formaters"
-import { Printer } from "lucide-react"
-import { useRef } from "react"
-import { useReactToPrint } from "react-to-print"
+import { ReceiptTemplates } from "@/utils/printerUtils"
+import { Download, Printer } from "lucide-react"
 
 export function CloseCashRegisterReport() {
     const { currentCashRegister, getCashAmount, getCardAmount, getPixAmount, getTotalSold } = useCashRegisterStore()
-    const componentRef = useRef<HTMLDivElement>(null)
-
-    const handlePrint = useReactToPrint({
-        documentTitle: `Fechamento-Caixa-${currentCashRegister?.id.slice(-6)}`,
-        onAfterPrint: () => {
-            console.log('Printed successfully')
-        },
-        bodyClass: 'print-receipt',
-        contentRef: componentRef,
-    })
+    const { printCashRegisterReport, isPrinting } = usePrinter()
 
     const registeredPayments = currentCashRegister?.registeredPayments
     const cashRegisteredPayments = registeredPayments?.filter((payment) => payment.paymentMethod === PaymentMethod.CASH).reduce((acc, payment) => acc + payment.amount, 0) || 0
@@ -46,6 +36,28 @@ export function CloseCashRegisterReport() {
     const totalSystemAmount = getTotalSold();
     const totalRegisteredAmount = cashRegisteredPayments + cardRegisteredPayments + pixRegisteredPayments;
     const totalDifference = totalRegisteredAmount - totalSystemAmount;
+
+    const receiptHTML = ReceiptTemplates.cashRegisterReport({
+        createdAt: currentCashRegister.createdAt,
+        openedAmount: currentCashRegister.openedAmount,
+        cashRegisteredPayments,
+        cashSystemAmount: getCashAmount(),
+        cardRegisteredPayments,
+        cardSystemAmount: getCardAmount(),
+        pixRegisteredPayments,
+        pixSystemAmount: getPixAmount(),
+        totalSystemAmount,
+        totalRegisteredAmount,
+        totalDifference,
+    })
+    const handlePrint = async (download?: boolean) => {
+        try {
+            await printCashRegisterReport(receiptHTML, { shouldCallFallback: true, download });
+            console.log('Cash register report printed successfully');
+        } catch (error) {
+            console.error('Failed to print cash register report:', error);
+        }
+    }
 
     return (
         <div className="relative space-y-6">
@@ -92,23 +104,21 @@ export function CloseCashRegisterReport() {
                 type="button"
                 onClick={() => handlePrint()}
                 className="w-full"
+                variant="outline"
+                disabled={isPrinting}
             >
                 <Printer className="h-4 w-4 mr-2" />
-                Imprimir Relatório
+                {isPrinting ? 'Imprimindo...' : 'Imprimir Relatório'}
             </Button>
-
-            {/* Hidden print component */}
-            <div style={{ display: 'none' }}>
-                <CashRegisterReport
-                    ref={componentRef}
-                    cashRegister={currentCashRegister}
-                    registeredPayments={{
-                        [PaymentMethod.CASH]: cashRegisteredPayments,
-                        [PaymentMethod.CARD]: cardRegisteredPayments,
-                        [PaymentMethod.PIX]: pixRegisteredPayments,
-                    }}
-                />
-            </div>
+            <Button
+                type="button"
+                onClick={() => handlePrint(true)}
+                className="w-full"
+                disabled={isPrinting}
+            >
+                <Download className="h-4 w-4 mr-2" />
+                {isPrinting ? 'Salvando...' : 'Salvar Relatório'}
+            </Button>
         </div>
     )
 }
