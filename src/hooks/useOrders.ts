@@ -99,7 +99,7 @@ export const useOrders = () => {
         error,
         openOrdersSubTotal: openOrdersSubTotal ?? 0,
         setSearch,
-        createOrder: createOrder.mutate,
+        createOrder: createOrder.mutateAsync,
         saveOrderItems: saveOrderItems.mutate,
         closeOrder: closeOrder.mutate,
         deleteOrder: deleteOrder.mutate,

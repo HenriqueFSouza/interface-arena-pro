@@ -4,12 +4,13 @@ import { NextResponse } from 'next/server'
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('arena_pro_access_token')
   const isAuthPage = request.nextUrl.pathname.startsWith('/login')
+  const hasToken = token !== undefined && token.value !== ''
 
-  if (!token && !isAuthPage) {
+  if (!hasToken && !isAuthPage) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  if (token) {
+  if (hasToken) {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
         credentials: 'include',
@@ -38,7 +39,6 @@ export async function middleware(request: NextRequest) {
       }
     }
   }
-
   return NextResponse.next()
 }
 

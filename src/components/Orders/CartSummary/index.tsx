@@ -1,14 +1,15 @@
 "use client"
 
-import { usePrintItem } from "@/components/Print"
-import Receipt from "@/components/Print/receipt"
+import PrintOptions from "@/components/Print/print-options"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { useOrders } from "@/hooks/useOrders"
+import { usePrinter } from "@/hooks/usePrinter"
 import { CartItem, useSalesStore } from "@/stores/sales-store"
 import { formatToBRL } from "@/utils/formaters"
 import { Minus, Plus, ShoppingCart, Trash2, X } from "lucide-react"
+import { useState } from "react"
 import DeleteOrderDialog from "../DeleteOrderDialog"
 
 export default function CartSummary() {
@@ -20,11 +21,14 @@ export default function CartSummary() {
     setIsOverlayOpen,
     setSelectedClient,
     getCartChangesForSave,
+    getCartChangesForTicketPrint,
     hasChanges,
   } = useSalesStore()
 
   const { orders, saveOrderItems, isPending, removeOrderItem } = useOrders()
-  const { printItem, printItemRef } = usePrintItem()
+  const [printOrderTicket, setPrintOrderTicket] = useState(false)
+  const [printTicket, setPrintTicket] = useState(false)
+  const { printOrder } = usePrinter()
 
   const handleCloseOverlay = () => {
     setIsOverlayOpen(false)
@@ -39,6 +43,8 @@ export default function CartSummary() {
   const handleMakeOrder = async () => {
     try {
       const changedItems = getCartChangesForSave()
+      const changedItemsForTicketPrint = getCartChangesForTicketPrint()
+
 
       if (changedItems.length > 0) {
         saveOrderItems({
@@ -54,9 +60,14 @@ export default function CartSummary() {
       handleCloseOverlay()
 
       // Print after closing
-      // if (order) {
-      //   printItem()
-      // }
+      if (order) {
+        if (printOrderTicket) {
+          printOrder({ order, newItems: changedItemsForTicketPrint, options: { shouldCallFallback: true } })
+        }
+        if (printTicket) {
+          printOrder({ order, template: 'ticket', newItems: changedItemsForTicketPrint })
+        }
+      }
     } catch (error) {
       console.error(error)
     }
@@ -84,7 +95,14 @@ export default function CartSummary() {
 
       <CartItens onDeleteItem={handleDeleteItem} />
 
-      <div className="p-4 border-t bg-muted">
+      <PrintOptions
+        handlePrintOrder={setPrintOrderTicket}
+        handlePrintTicket={setPrintTicket}
+        printOrderTicket={printOrderTicket}
+        printTicket={printTicket}
+      />
+
+      <div className="p-4 py-2">
         <div className="flex justify-between items-center mb-4">
           <span className="font-medium">Valor total</span>
           <span className="text-xl font-bold">{formatToBRL(getTotalPrice())}</span>
@@ -103,10 +121,6 @@ export default function CartSummary() {
           clientName={selectedClient.name}
           onSuccess={handleCloseOverlay}
         />
-      </div>
-
-      <div className="hidden">
-        <Receipt ref={printItemRef} order={order!} newItems={getCartChangesForSave()} />
       </div>
     </div>
   )

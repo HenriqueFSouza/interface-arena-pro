@@ -1,5 +1,6 @@
 "use client"
 
+import PrintOptions from "@/components/Print/print-options"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/tooltip"
 import { useCashRegister } from "@/hooks/useCashRegister"
 import { useOrders } from "@/hooks/useOrders"
+import { usePrinter } from "@/hooks/usePrinter"
 import { newOrderSchema, type NewOrderFormData } from "@/schemas/new-order"
 import { useSalesStore } from "@/stores/sales-store"
 import { formatPhoneNumber, formatToBRL } from "@/utils/formaters"
@@ -32,9 +34,12 @@ import OrderProductsList from "../OrderProductsList"
 export default function NewOrderDialog() {
     const [open, setOpen] = useState(false)
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+    const [printOrderTicket, setPrintOrderTicket] = useState(false)
+    const [printTicket, setPrintTicket] = useState(false)
     const { cartItems, getTotalPrice, clearCart } = useSalesStore()
     const { isPending, createOrder } = useOrders()
     const { isOpen: isCashRegisterOpen } = useCashRegister()
+    const { printOrder } = usePrinter()
 
     const {
         register,
@@ -63,7 +68,7 @@ export default function NewOrderDialog() {
             quantity: item.quantity
         }))
 
-        createOrder({
+        const order = await createOrder({
             clientInfo: {
                 name: data.name,
                 phone: data.phone
@@ -73,6 +78,14 @@ export default function NewOrderDialog() {
         reset()
         clearCart()
         setOpen(false)
+
+        const hasItems = order.items.length > 0
+        if (printOrderTicket && hasItems) {
+            printOrder({ order, options: { shouldCallFallback: true } })
+        }
+        if (printTicket && hasItems) {
+            printOrder({ order, template: 'ticket' })
+        }
     }
 
     return (
@@ -164,6 +177,14 @@ export default function NewOrderDialog() {
                                             </div>
 
                                             <CartItens />
+
+                                            <PrintOptions
+                                                className="p-0 [&>label]:text-xs [&>button]:size-4"
+                                                handlePrintOrder={setPrintOrderTicket}
+                                                handlePrintTicket={setPrintTicket}
+                                                printOrderTicket={printOrderTicket}
+                                                printTicket={printTicket}
+                                            />
 
                                             <div className="pt-3 mt-2">
                                                 <div className="flex justify-between items-center mb-4">

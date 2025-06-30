@@ -1,5 +1,6 @@
 "use client"
 
+import PrintOptions from "@/components/Print/print-options";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { OrderPaymentProvider } from "@/contexts/OrderPaymentContext";
 import { useCashRegister } from "@/hooks/useCashRegister";
+import { usePrinter } from "@/hooks/usePrinter";
 import { QuickSaleStep, useQuickSale } from "@/hooks/useQuickSale";
 import { useSalesStore } from "@/stores/sales-store";
 import { formatToBRL } from "@/utils/formaters";
@@ -34,8 +36,11 @@ import PaymentContent from "../PaymentDialog/PaymentContent";
 export default function QuickSaleDialog() {
     const [open, setOpen] = useState(false);
     const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
+    const [printOrderTicket, setPrintOrderTicket] = useState(false)
+    const [printTicket, setPrintTicket] = useState(false)
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const { isOpen: isCashRegisterOpen } = useCashRegister();
+    const { printOrder } = usePrinter()
 
     const {
         cartItems,
@@ -83,6 +88,12 @@ export default function QuickSaleDialog() {
     const handlePaymentComplete = () => {
         closeQuickSaleOrder(tempOrder?.id!);
         setOpen(false);
+        if (printOrderTicket) {
+            printOrder({ order: tempOrder!, options: { shouldCallFallback: true } })
+        }
+        if (printTicket) {
+            printOrder({ order: tempOrder!, template: 'ticket' })
+        }
     };
 
     const handleOpenChange = (newOpen: boolean) => {
@@ -164,6 +175,14 @@ export default function QuickSaleDialog() {
                                 </div>
 
                                 <CartItens />
+
+                                <PrintOptions
+                                    className="p-0 [&>label]:text-xs [&>button]:size-4 [&>button]:mr-0"
+                                    handlePrintOrder={setPrintOrderTicket}
+                                    handlePrintTicket={setPrintTicket}
+                                    printOrderTicket={printOrderTicket}
+                                    printTicket={printTicket}
+                                />
 
                                 <div className="pt-3 mt-2">
                                     <div className="flex justify-between items-center mb-4">
