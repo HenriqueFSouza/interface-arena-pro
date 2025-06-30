@@ -189,12 +189,12 @@ export class PrinterService {
     /**
      * Main print function that tries local service first, then falls back to browser
      */
-    static async print(element: HTMLElement, shouldCallFallback?: boolean): Promise<void> {
+    static async print(element: HTMLElement, shouldCallFallback?: boolean, download?: boolean): Promise<void> {
         try {
             // Check if service is available first
             const serviceAvailable = await this.isServiceAvailable();
 
-            if (!serviceAvailable && shouldCallFallback) {
+            if ((!serviceAvailable && shouldCallFallback) || download) {
                 console.warn('Printer service not available, using browser print');
                 this.fallbackToBrowserPrint(element);
                 return;

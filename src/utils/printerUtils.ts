@@ -286,6 +286,7 @@ export const ReceiptTemplates = {
             color: #000000;
             background: white;
             padding-bottom: 40px;
+            margin: 0 auto;
             width: 90mm;
         `;
 
@@ -297,7 +298,7 @@ export const ReceiptTemplates = {
 
             return `
                 <tr>
-                    <td style="font-weight: 600; text-align: left; padding: 8px 0; font-weight: 500;">${methodName}</td>
+                    <td style="font-weight: 600; text-align: left; padding: 8px 0;">${methodName}</td>
                     <td style="text-align: center; font-size: 18px; padding: 8px 0;">${formatToBRL(systemAmount, true)}</td>
                     <td style="text-align: center; font-size: 18px; padding: 8px 0;">${formatToBRL(registeredAmount, true)}</td>
                     <td style="text-align: right; font-size: 18px; padding: 8px 0;">${formatToBRL(difference, true)}</td>
@@ -323,11 +324,11 @@ export const ReceiptTemplates = {
                 <!-- Cash Register Info -->
                 <div style="margin-bottom: 16px;">
                     <p style="font-weight: bold; margin-bottom: 4px; font-size: 16px;">Informações do Caixa</p>
-                    <div style="display: flex; justify-content: space-between; font-size: 16px; margin-bottom: 2px; font-weight: 500;">
+                    <div style="display: flex; justify-content: space-between; font-size: 16px; margin-bottom: 2px;">
                         <span>Abertura:</span>
                         <span>${formatDateTime(createdAt)}</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between; font-weight: 500;">
+                    <div style="display: flex; justify-content: space-between;">
                         <span>Valor Inicial:</span>
                         <span style="font-size: 16px;">${formatToBRL(openedAmount)}</span>
                     </div>
@@ -359,7 +360,7 @@ export const ReceiptTemplates = {
                 </div>
 
                 <!-- Footer -->
-                <div style="text-align: center; margin: 16px 0; font-size: 16px; font-weight: 500; margin-bottom: 20px;">
+                <div style="text-align: center; margin: 16px 0; font-size: 16px; margin-bottom: 20px;">
                     <p>Relatório gerado automaticamente pelo sistema</p>
                 </div>
             </div>
@@ -403,7 +404,7 @@ export async function printCashRegister(
 
         const element = createElementFromHTML(receiptHTML);
 
-        await PrinterService.print(element, (options?.shouldCallFallback ?? false) && options?.download);
+        await PrinterService.print(element, (options?.shouldCallFallback ?? false), options?.download);
 
         return { success: true };
     } catch (error) {
