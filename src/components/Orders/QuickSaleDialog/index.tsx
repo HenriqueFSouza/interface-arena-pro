@@ -39,7 +39,7 @@ export default function QuickSaleDialog() {
     const [printOrderTicket, setPrintOrderTicket] = useState(false)
     const [printTicket, setPrintTicket] = useState(false)
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-    const { isOpen: isCashRegisterOpen } = useCashRegister();
+    const { isOpen: isCashRegisterOpen, cashRegister } = useCashRegister();
     const { printOrder } = usePrinter()
 
     const {
@@ -58,7 +58,7 @@ export default function QuickSaleDialog() {
         cancelQuickSale,
         goBackToProducts,
         closeQuickSaleOrder,
-    } = useQuickSale();
+    } = useQuickSale(cashRegister?.id);
 
     const handleClose = () => {
         if (tempOrder) {
