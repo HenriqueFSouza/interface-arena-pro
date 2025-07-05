@@ -35,9 +35,11 @@ export interface CashRegister {
 }
 
 export interface CashRegisterSales {
+    id: string;
     orderId: string;
     clientName: string;
     payments: {
+        id: string;
         paymentMethod: PaymentMethod;
         amount: string;
     }[];

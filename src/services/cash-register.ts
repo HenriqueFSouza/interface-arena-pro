@@ -24,6 +24,14 @@ export interface RegisterPaymentRequest {
     }[]
 }
 
+export interface UpdatePaymentMethodsRequest {
+    payments: {
+        paymentId: string
+        paymentMethod: PaymentMethod
+    }[],
+    transactionId: string
+}
+
 export const cashRegisterService = {
     async getCashRegister(): Promise<CashRegister> {
         const response = await api.get('/cash-register/current');
@@ -57,6 +65,11 @@ export const cashRegisterService = {
 
     async getSalesSummary(cashRegisterId: string): Promise<CashRegisterSales[]> {
         const response = await api.get(`/cash-register/sales/${cashRegisterId}`);
+        return response.data;
+    },
+
+    async updatePaymentMethods(data: UpdatePaymentMethodsRequest): Promise<void> {
+        const response = await api.put(`/cash-register/transaction/${data.transactionId}/payments`, { payments: data.payments });
         return response.data;
     },
 };
