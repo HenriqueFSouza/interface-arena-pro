@@ -5,6 +5,7 @@ import { useCashRegisterSales } from "@/hooks/useCashRegisterSales";
 import { formatDateTime, formatToBRL } from "@/utils/formaters";
 import { getPaymentMethodIcon } from "@/utils/payments";
 import { Dot, Loader2 } from "lucide-react";
+import EditSalesDialog from "../EditSalesDialog";
 
 export function SalesCard({ cashRegisterId }: { cashRegisterId?: string }) {
     const { cashRegisterSales, isLoading } = useCashRegisterSales(cashRegisterId)
@@ -29,6 +30,10 @@ export function SalesCard({ cashRegisterId }: { cashRegisterId?: string }) {
                         {cashRegisterSales?.map((sale) => (
                             <div key={sale.orderId} className="flex items-center justify-between border-b pb-2">
                                 <div className="flex flex-1 gap-2 overflow-hidden">
+
+                                    {/*Edit payment method */}
+                                    <EditSalesDialog sale={sale} cashRegisterId={cashRegisterId!} />
+
                                     <div className="flex flex-col min-w-fit">
                                         <p className="font-medium text-sm">{sale.clientName}</p>
                                         <p className="text-xs text-muted-foreground">

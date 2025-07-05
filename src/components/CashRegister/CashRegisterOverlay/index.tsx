@@ -15,6 +15,7 @@ import { AddMoneyDialog } from "../AddMoneyDialog"
 import { CloseCashRegisterDialog } from "../CloseCashRegisterDialog"
 import { WithdrawMoneyDialog } from "../WithdrawMoneyDialog.tsx"
 import { SalesCard } from "./SalesCard"
+
 export default function CashRegisterOverlay() {
     const {
         isOverlayOpen,
