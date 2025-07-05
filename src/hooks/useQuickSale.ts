@@ -12,12 +12,12 @@ export enum QuickSaleStep {
     PAYMENT = 'payment'
 }
 
-export const useQuickSale = () => {
+export const useQuickSale = (cashRegisterId?: string) => {
     const [currentStep, setCurrentStep] = useState<QuickSaleStep>(QuickSaleStep.PRODUCTS);
     const [tempOrder, setTempOrder] = useState<Order | null>(null);
     const { cartItems, clearCart, getTotalPrice } = useSalesStore();
     const { invalidateCashRegister } = useCashRegister();
-    const { invalidateCashRegisterSales } = useCashRegisterSales();
+    const { invalidateCashRegisterSales } = useCashRegisterSales(cashRegisterId);
 
     const createTempOrder = useMutation({
         mutationFn: () => ordersService.createOrder({

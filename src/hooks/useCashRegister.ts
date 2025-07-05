@@ -1,11 +1,11 @@
+import { queryClient } from "@/providers/query-provider"
 import { cashRegisterService } from "@/services/cash-register"
 import { useCashRegisterStore } from "@/stores/cash-register-store"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 
 export const CASH_REGISTER_QUERY_KEY = 'cash-register'
 
 export function useCashRegister() {
-    const queryClient = useQueryClient()
     const { setCurrentCashRegister, setIsOverlayOpen } = useCashRegisterStore()
 
     const { data: cashRegister = null, isLoading, refetch } = useQuery({

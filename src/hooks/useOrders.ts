@@ -2,16 +2,14 @@
 
 import { OrderItem } from "@/@types/order"
 import { useCashRegister } from "@/hooks/useCashRegister"
-import { useCashRegisterSales } from "@/hooks/useCashRegisterSales"
+import { queryClient } from "@/providers/query-provider"
 import { ordersService } from "@/services/orders"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
 import { toast } from "react-hot-toast"
 
 export const useOrders = () => {
-    const queryClient = useQueryClient()
     const { invalidateCashRegister } = useCashRegister()
-    const { invalidateCashRegisterSales } = useCashRegisterSales()
 
     const [search, setSearch] = useState('')
 
@@ -49,9 +47,9 @@ export const useOrders = () => {
         mutationFn: ordersService.closeOrder,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['orders'] })
+            queryClient.invalidateQueries({ queryKey: ['cash-register-sales'] })
             refetch()
             invalidateCashRegister()
-            invalidateCashRegisterSales()
             toast.success('Comanda finalizada com sucesso')
         },
         onError: () => {
