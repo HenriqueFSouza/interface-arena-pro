@@ -33,6 +33,7 @@ interface SalesStore {
 
   // Novas funções para calcular mudanças
   getNewQuantityForProduct: (productId: string) => number
+  restoreQuantity: (productId: string) => void
   getCartChangesForSave: () => CartItem[]
   getCartChangesForTicketPrint: () => CartItem[]
   hasChanges: () => boolean
@@ -127,6 +128,21 @@ export const useSalesStore = create<SalesStore>((set, get) => ({
 
     const diff = currentItem.quantity - initialItem.quantity
     return diff > 0 ? diff : 0 // Só mostra se aumentou
+  },
+
+  restoreQuantity: (productId) => {
+    const { cartItems, initialCartItems } = get()
+    const currentItem = cartItems.find(item => item.product.id === productId)
+    const initialItem = initialCartItems.find(item => item.product.id === productId)
+
+    if (!currentItem) return
+    if (!initialItem) return
+
+    set({
+      cartItems: cartItems.map((item) =>
+        item.product.id === productId ? { ...item, quantity: initialItem.quantity } : item
+      )
+    })
   },
 
   getCartChangesForSave: () => {

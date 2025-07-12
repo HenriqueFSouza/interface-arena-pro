@@ -6,7 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { cn } from "@/lib/utils"
 import { useSalesStore } from "@/stores/sales-store"
 import { formatToBRL } from "@/utils/formaters"
-import { MoreVertical, Pencil, Trash2 } from "lucide-react"
+import { MoreVertical, Pencil, Trash2, X } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
@@ -23,7 +23,7 @@ interface ProductCardProps {
 export default function ProductCard({ product, onDelete, className, isEditable, onSelect }: ProductCardProps) {
     const router = useRouter()
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-    const { getNewQuantityForProduct, cartItems } = useSalesStore()
+    const { getNewQuantityForProduct, cartItems, restoreQuantity } = useSalesStore()
 
     const handleEdit = () => {
         isEditable && router.push(`/products/${product.id}`)
@@ -33,9 +33,17 @@ export default function ProductCard({ product, onDelete, className, isEditable, 
 
     return (
         <div className="relative">
+
+            {/*Restore quantity button*/}
+            {newQuantity > 0 && (
+                <Button variant="outline" className="absolute -top-1 -left-2 z-50 bg-gray-100 hover:bg-gray-200 p-1 h-auto" onClick={() => restoreQuantity(product.id)}>
+                    <X className="size-4 text-red-500" />
+                </Button>
+            )}
+
             {/* New Item Quantity Counter Badge */}
             {newQuantity > 0 && onSelect && (
-                <Badge className="absolute -top-1 -right-2 z-50 bg-blue-500 hover:bg-blue-600 px-2">
+                <Badge className="absolute -top-1 -right-2 z-50 text-sm bg-blue-500 hover:bg-blue-600 px-2">
                     {newQuantity}
                 </Badge>
             )}
