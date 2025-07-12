@@ -4,7 +4,9 @@ import PrintOptions from "@/components/Print/print-options"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { useOrders } from "@/hooks/useOrders"
+import { useOrders } from "@/hooks/orders/useOrders"
+import { useRemoveOrderItemMutation } from "@/hooks/orders/useRemoveOrderItemMutation"
+import { useSaveOrdersItensMutation } from "@/hooks/orders/useSaveOrdersItensMutation"
 import { usePrinter } from "@/hooks/usePrinter"
 import { CartItem, useSalesStore } from "@/stores/sales-store"
 import { formatToBRL } from "@/utils/formaters"
@@ -25,7 +27,9 @@ export default function CartSummary() {
     hasChanges,
   } = useSalesStore()
 
-  const { orders, saveOrderItems, isPending, removeOrderItem } = useOrders()
+  const { orders } = useOrders()
+  const { saveOrderItems, isPending: isSavingOrderItems } = useSaveOrdersItensMutation()
+  const { removeOrderItem, isPending: isRemovingOrderItem } = useRemoveOrderItemMutation()
   const [printOrderTicket, setPrintOrderTicket] = useState(false)
   const [printTicket, setPrintTicket] = useState(false)
   const { printOrder } = usePrinter()
@@ -47,7 +51,7 @@ export default function CartSummary() {
 
 
       if (changedItems.length > 0) {
-        saveOrderItems({
+        await saveOrderItems({
           orderId: selectedClient.orderId,
           items: changedItems.map((item) => ({
             productId: item.product.id,
@@ -112,7 +116,7 @@ export default function CartSummary() {
           size="lg"
           disabled={cartItems.length === 0 || !hasChanges()}
           onClick={handleMakeOrder}
-          isLoading={isPending}
+          isLoading={isSavingOrderItems || isRemovingOrderItem}
         >
           Salvar alterações
         </Button>

@@ -28,7 +28,7 @@ export default function ClientOrderCard({ order }: ClientOrderCardProps) {
     await printOrder({ order, options: { shouldCallFallback: true } })
   }
 
-  const totalPrice = order.items.reduce((acc, item) => acc + item.product.price * item.quantity, 0)
+  const totalPrice = order.items.reduce((acc, item) => acc + (item.product?.price || item?.price!) * item.quantity, 0)
   const totalItems = order.items.reduce((acc, item) => acc + item.quantity, 0)
 
   return (
