@@ -136,13 +136,20 @@ export const useSalesStore = create<SalesStore>((set, get) => ({
     const initialItem = initialCartItems.find(item => item.product.id === productId)
 
     if (!currentItem) return
-    if (!initialItem) return
+
+    if (!initialItem) {
+      set({
+        cartItems: cartItems.filter((item) => item.product.id !== productId)
+      })
+      return
+    }
 
     set({
       cartItems: cartItems.map((item) =>
         item.product.id === productId ? { ...item, quantity: initialItem.quantity } : item
       )
     })
+
   },
 
   getCartChangesForSave: () => {
