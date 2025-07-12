@@ -2,8 +2,8 @@
 
 import { OpenCashRegisterDialog } from "@/components/CashRegister/OpenCashRegisterDialog"
 import { SearchInput } from "@/components/SearchInput"
+import { useOrders } from "@/hooks/orders/useOrders"
 import { useCashRegister } from "@/hooks/useCashRegister"
-import { useOrders } from "@/hooks/useOrders"
 import { formatToBRL } from "@/utils/formaters"
 import ClientOrderCard from "../ClientOrderCard"
 

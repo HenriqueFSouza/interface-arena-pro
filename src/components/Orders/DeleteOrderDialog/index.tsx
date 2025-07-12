@@ -10,7 +10,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { useOrders } from "@/hooks/useOrders"
+import { useDeleteOrderMutation } from "@/hooks/orders/useDeleteOrderMutation"
 import { Trash2 } from "lucide-react"
 import { useState } from "react"
 
@@ -22,15 +22,12 @@ interface DeleteOrderDialogProps {
 
 export default function DeleteOrderDialog({ orderId, clientName, onSuccess }: DeleteOrderDialogProps) {
     const [open, setOpen] = useState(false)
-    const { deleteOrder, isPending } = useOrders()
+    const { deleteOrder, isPending } = useDeleteOrderMutation()
 
     const handleDelete = () => {
-        deleteOrder(orderId, {
-            onSuccess: () => {
-                setOpen(false)
-                if (onSuccess) onSuccess()
-            }
-        })
+        deleteOrder(orderId)
+        setOpen(false)
+        if (onSuccess) onSuccess()
     }
 
     return (

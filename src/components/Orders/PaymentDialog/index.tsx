@@ -18,7 +18,7 @@ import {
     DialogTrigger
 } from "@/components/ui/dialog";
 import { OrderPaymentProvider, useOrderPayment } from "@/contexts/OrderPaymentContext";
-import { useOrders } from "@/hooks/useOrders";
+import { useCloseOrderMutation } from "@/hooks/orders/useCloseOrderMutation";
 import { formatToBRL } from "@/utils/formaters";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { CircleDollarSign, Wallet } from "lucide-react";
@@ -32,7 +32,7 @@ interface PaymentDialogProps {
 function PaymentDialogContent({ order, onClose }: PaymentDialogProps) {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const { remainingAmount } = useOrderPayment();
-    const { closeOrder } = useOrders();
+    const { closeOrder } = useCloseOrderMutation();
 
     useEffect(() => {
         return () => {
@@ -40,7 +40,7 @@ function PaymentDialogContent({ order, onClose }: PaymentDialogProps) {
         };
     }, []);
 
-    const handleFinishPayment = async () => {
+    const handleFinishPayment = () => {
         if (!order?.id) return;
 
         if (remainingAmount > 0) {
@@ -48,30 +48,16 @@ function PaymentDialogContent({ order, onClose }: PaymentDialogProps) {
             return;
         }
 
-        try {
-            await closeOrder(order.id);
-            onClose();
-        } catch (error) {
-            console.error(error);
-        }
+        closeOrder(order.id);
+        onClose();
     };
 
-    const handleConfirmCloseOrder = async () => {
+    const handleConfirmCloseOrder = () => {
         if (!order?.id) return;
 
-        try {
-            setShowConfirmation(false);
-
-            await new Promise(resolve => setTimeout(resolve, 100));
-
-            closeOrder(order.id);
-
-            onClose();
-        } catch (error) {
-            setShowConfirmation(false);
-            onClose();
-            console.error('Error closing order:', error);
-        }
+        setShowConfirmation(false);
+        closeOrder(order.id);
+        onClose();
     };
 
     const customFooter = (

@@ -17,8 +17,8 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useCreateOrderMutation } from "@/hooks/orders/useCreateOrderMutation"
 import { useCashRegister } from "@/hooks/useCashRegister"
-import { useOrders } from "@/hooks/useOrders"
 import { usePrinter } from "@/hooks/usePrinter"
 import { newOrderSchema, type NewOrderFormData } from "@/schemas/new-order"
 import { useSalesStore } from "@/stores/sales-store"
@@ -37,7 +37,7 @@ export default function NewOrderDialog() {
     const [printOrderTicket, setPrintOrderTicket] = useState(false)
     const [printTicket, setPrintTicket] = useState(false)
     const { cartItems, getTotalPrice, clearCart } = useSalesStore()
-    const { isPending, createOrder } = useOrders()
+    const { createOrder, isPending: isCreatingOrder } = useCreateOrderMutation()
     const { isOpen: isCashRegisterOpen } = useCashRegister()
     const { printOrder } = usePrinter()
 
@@ -194,9 +194,9 @@ export default function NewOrderDialog() {
                                                 <Button
                                                     onClick={handleSubmit(onSubmit)}
                                                     className="w-full"
-                                                    disabled={isPending}
+                                                    disabled={isCreatingOrder}
                                                 >
-                                                    {isPending ? "Criando..." : "Criar comanda"}
+                                                    {isCreatingOrder ? "Criando..." : "Criar comanda"}
                                                 </Button>
                                             </div>
                                         </div>
