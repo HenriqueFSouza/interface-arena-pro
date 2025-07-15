@@ -14,7 +14,7 @@ export const useSaveOrdersItensMutation = () => {
             const previousItems = queryClient.getQueryData<Order[]>([ORDER_QUERY_KEY])
             const updatedOrders = previousItems?.map((order) => order.id === orderId ? { ...order, items } : order)
 
-            queryClient.setQueryData([ORDER_QUERY_KEY], updatedOrders)
+            queryClient.setQueryData([ORDER_QUERY_KEY], updatedOrders?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
 
             return { updatedOrders, previousItems, orderId }
 
