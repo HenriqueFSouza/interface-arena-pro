@@ -8,7 +8,8 @@ import { usePathname } from "next/navigation"
 export function Sidebar({ className }: { className?: string }) {
     const pathname = usePathname()
 
-    const isActive = (path: string) => pathname === path
+    const isActive = (path: string) => path === '/' ? pathname === path : pathname.includes(path)
+
     return (
         <div className={cn(
             "relativetext-neutral-800 h-full p-6 px-4 lg:text-white transition-all duration-300 ease-in-out",
@@ -20,7 +21,7 @@ export function Sidebar({ className }: { className?: string }) {
             <nav className="space-y-6 pt-10">
                 {routes.map((route) => {
 
-                    const isDisabled = route.disabled
+                    const isDisabled = route?.disabled ?? false
                     return (
                         <Link href={route.href} key={route.href} className={cn(
                             "p-2 flex items-center font-semibold gap-4 transition-all duration-100 ease-in-out",

@@ -49,4 +49,17 @@ export function formatDateTime(date: string): string {
     })
 }
 
+export function formatDayOfWeek(day: string): string {
+    if (!day) return ''
+    const days = {
+        'Dom': 'Domingo',
+        'Seg': 'Segunda-feira',
+        'Ter': 'Terça-feira',
+        'Qua': 'Quarta-feira',
+        'Qui': 'Quinta-feira',
+        'Sex': 'Sexta-feira',
+        'Sáb': 'Sábado',
+    }
+    return days[day as keyof typeof days]
+}
 

@@ -1,6 +1,13 @@
 import { BarChart, Package, ShoppingBag, ShoppingCart } from "lucide-react";
 
-export const routes = [
+interface Route {
+    label: string
+    href: string
+    icon: React.ElementType
+    disabled?: boolean
+}
+
+export const routes: Route[] = [
     {
         label: "Vender",
         href: "/",
@@ -20,7 +27,6 @@ export const routes = [
         label: "Relatórios",
         href: "/reports",
         icon: BarChart,
-        disabled: true,
     }
 ]
 
