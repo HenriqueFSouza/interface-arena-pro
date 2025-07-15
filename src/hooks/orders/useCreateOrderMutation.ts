@@ -48,7 +48,7 @@ export const useCreateOrderMutation = () => {
             queryClient.setQueryData([ORDER_QUERY_KEY], (old: Order[] = []) => {
                 return old.map((order) =>
                     order.id === context?.optimisticOrder.id ? data : order
-                )
+                ).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
             })
             toast.success('Comanda criada com sucesso')
         },

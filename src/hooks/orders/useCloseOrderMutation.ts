@@ -17,7 +17,7 @@ export const useCloseOrderMutation = () => {
 
             // Optimistically update the order status
             queryClient.setQueryData([ORDER_QUERY_KEY], (old: Order[] = []) => {
-                return old.filter((order) => order.id !== orderId)
+                return old.filter((order) => order.id !== orderId).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
             })
 
             return { previousOrders, orderId }
