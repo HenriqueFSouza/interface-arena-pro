@@ -1,60 +1,91 @@
-import { UpdateStockItemDTO } from "@/@types/stock"
-import { stockService } from "@/services/stock"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { useMemo } from "react"
+import { UpdateStockItemDTO, UpdateUnitPriceDTO } from "@/@types/stock";
+import { stockService } from "@/services/stock";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
 
-export const STOCK_QUERY_KEY = 'stock'
+export const STOCK_QUERY_KEY = "stock";
 
 export function useStock() {
-    const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-    const { data: items = [], isLoading, dataUpdatedAt, refetch } = useQuery({
-        queryKey: [STOCK_QUERY_KEY],
-        queryFn: stockService.findAll,
-    })
+  const {
+    data: items = [],
+    isLoading,
+    dataUpdatedAt,
+    refetch,
+  } = useQuery({
+    queryKey: [STOCK_QUERY_KEY],
+    queryFn: stockService.findAll,
+  });
 
-    const invalidateAndRefetch = () => {
-        queryClient.invalidateQueries({ queryKey: [STOCK_QUERY_KEY] })
-        refetch()
-    }
+  const invalidateAndRefetch = () => {
+    queryClient.invalidateQueries({ queryKey: [STOCK_QUERY_KEY] });
+    refetch();
+  };
 
-    const createItem = useMutation({
-        mutationFn: stockService.create,
-        onSuccess: () => {
-            invalidateAndRefetch()
-        }
-    })
+  const createItem = useMutation({
+    mutationFn: stockService.create,
+    onSuccess: () => {
+      invalidateAndRefetch();
+    },
+  });
 
-    const updateItem = useMutation({
-        mutationFn: async ({ id, data }: { id: string, data: UpdateStockItemDTO }) => {
-            return stockService.update(id, data)
-        },
-        onSuccess: () => {
-            invalidateAndRefetch()
-        }
-    })
+  const updateItem = useMutation({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: UpdateStockItemDTO;
+    }) => {
+      return stockService.update(id, data);
+    },
+    onSuccess: () => {
+      invalidateAndRefetch();
+    },
+  });
 
-    const removeItem = useMutation({
-        mutationFn: stockService.remove,
-        onSuccess: () => {
-            invalidateAndRefetch()
-        }
-    })
+  const updateUnitPrice = useMutation({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: UpdateUnitPriceDTO;
+    }) => {
+      return stockService.updateUnitPrice(id, data);
+    },
+    onSuccess: () => {
+      invalidateAndRefetch();
+    },
+  });
 
-    const totalValue = useMemo(() => items.reduce((acc, item) => {
-        const unitPrice = item.totalAmountSpent / item.totalQuantityPurchased
-        const isPositiveQuantity = item.quantity > 0
-        return acc + (isPositiveQuantity ? item.quantity * unitPrice : 0)
-    }, 0), [items])
+  const removeItem = useMutation({
+    mutationFn: stockService.remove,
+    onSuccess: () => {
+      invalidateAndRefetch();
+    },
+  });
 
-    return {
-        items,
-        totalValue,
-        isLoading,
-        createItem: createItem.mutate,
-        updateItem: updateItem.mutate,
-        removeItem: removeItem.mutate,
-        invalidateAndRefetch,
-        lastUpdatedAt: new Date(dataUpdatedAt)
-    }
-} 
+  const totalValue = useMemo(
+    () =>
+      items.reduce((acc, item) => {
+        const unitPrice = item.totalAmountSpent / item.totalQuantityPurchased;
+        const isPositiveQuantity = item.quantity > 0;
+        return acc + (isPositiveQuantity ? item.quantity * unitPrice : 0);
+      }, 0),
+    [items]
+  );
+
+  return {
+    items,
+    totalValue,
+    isLoading,
+    createItem: createItem.mutate,
+    updateItem: updateItem.mutate,
+    updateUnitPrice: updateUnitPrice.mutate,
+    removeItem: removeItem.mutate,
+    invalidateAndRefetch,
+    lastUpdatedAt: new Date(dataUpdatedAt),
+  };
+}
