@@ -4,8 +4,8 @@ import { ReportPeriod } from "@/services/reports";
 import { useState } from "react";
 import { DayOfWeekCard } from "./SalesCards/DayOfWeekCard";
 import { PaymentMethodCard } from "./SalesCards/PaymentMethodCard";
+import { SoldProductsCard } from "./SalesCards/SoldProductsCard";
 import { SummaryCards } from "./SalesCards/SummaryCards";
-import { TopProductsCard } from "./SalesCards/TopProductsCard";
 import { SalesChart } from "./SalesChart";
 import { PeriodSelector } from "./SalesChart/PeriodSelector";
 
@@ -30,8 +30,8 @@ export function SalesReports() {
         <DayOfWeekCard period={period} />
       </div>
 
-      {/* Top Products */}
-      <TopProductsCard period={period} />
+      {/* Sold Products */}
+      <SoldProductsCard />
     </div>
   );
 }
