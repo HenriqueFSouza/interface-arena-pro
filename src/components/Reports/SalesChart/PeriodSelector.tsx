@@ -24,7 +24,7 @@ export function PeriodSelector({
         <SelectValue placeholder="Selecione o período" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="current">Período atual</SelectItem>
+        <SelectItem value="current">Mês atual</SelectItem>
         {isCards && <SelectItem value="today">Hoje</SelectItem>}
         <SelectItem value="month">Último mês</SelectItem>
         <SelectItem value="3months">Últimos 3 meses</SelectItem>
