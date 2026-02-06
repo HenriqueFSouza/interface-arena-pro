@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import PrintOptions from "@/components/Print/print-options"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
-import { useOrders } from "@/hooks/orders/useOrders"
-import { useRemoveOrderItemMutation } from "@/hooks/orders/useRemoveOrderItemMutation"
-import { useSaveOrdersItensMutation } from "@/hooks/orders/useSaveOrdersItensMutation"
-import { usePrinter } from "@/hooks/usePrinter"
-import { CartItem, useSalesStore } from "@/stores/sales-store"
-import { formatToBRL } from "@/utils/formaters"
-import { Minus, Plus, ShoppingCart, Trash2, X } from "lucide-react"
-import { useState } from "react"
-import DeleteOrderDialog from "../DeleteOrderDialog"
+import PrintOptions from "@/components/Print/print-options";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { useOrders } from "@/hooks/orders/useOrders";
+import { useRemoveOrderItemMutation } from "@/hooks/orders/useRemoveOrderItemMutation";
+import { useSaveOrdersItensMutation } from "@/hooks/orders/useSaveOrdersItensMutation";
+import { usePrinter } from "@/hooks/usePrinter";
+import { CartItem, useSalesStore } from "@/stores/sales-store";
+import { formatToBRL } from "@/utils/formaters";
+import { Minus, Plus, ShoppingCart, Trash2, X } from "lucide-react";
+import { useState } from "react";
+import DeleteOrderDialog from "../DeleteOrderDialog";
 
 export default function CartSummary() {
   const {
@@ -25,30 +25,31 @@ export default function CartSummary() {
     getCartChangesForSave,
     getCartChangesForTicketPrint,
     hasChanges,
-  } = useSalesStore()
+  } = useSalesStore();
 
-  const { orders } = useOrders()
-  const { saveOrderItems, isPending: isSavingOrderItems } = useSaveOrdersItensMutation()
-  const { removeOrderItem, isPending: isRemovingOrderItem } = useRemoveOrderItemMutation()
-  const [printOrderTicket, setPrintOrderTicket] = useState(false)
-  const [printTicket, setPrintTicket] = useState(false)
-  const { printOrder } = usePrinter()
+  const { orders } = useOrders();
+  const { saveOrderItems, isPending: isSavingOrderItems } =
+    useSaveOrdersItensMutation();
+  const { removeOrderItem, isPending: isRemovingOrderItem } =
+    useRemoveOrderItemMutation();
+  const [printOrderTicket, setPrintOrderTicket] = useState(false);
+  const [printTicket, setPrintTicket] = useState(false);
+  const { printOrder } = usePrinter();
 
   const handleCloseOverlay = () => {
-    setIsOverlayOpen(false)
-    setSelectedClient(null)
-    clearCart()
-  }
+    setIsOverlayOpen(false);
+    setSelectedClient(null);
+    clearCart();
+  };
 
-  if (!selectedClient) return null
+  if (!selectedClient) return null;
 
-  const order = orders.find((order) => order.id === selectedClient.orderId)
+  const order = orders.find((order) => order.id === selectedClient.orderId);
 
   const handleMakeOrder = async () => {
     try {
-      const changedItems = getCartChangesForSave()
-      const changedItemsForTicketPrint = getCartChangesForTicketPrint()
-
+      const changedItems = getCartChangesForSave();
+      const changedItemsForTicketPrint = getCartChangesForTicketPrint();
 
       if (changedItems.length > 0) {
         await saveOrderItems({
@@ -57,43 +58,63 @@ export default function CartSummary() {
             productId: item.product.id,
             quantity: item.quantity,
             orderClientId: selectedClient.id,
-          }))
-        })
+          })),
+          // Pass full items for optimistic update
+          itemsWithProduct: changedItems.map((item) => ({
+            id: item.id || "",
+            productId: item.product.id,
+            quantity: item.quantity,
+            orderClientId: selectedClient.id,
+            product: item.product,
+          })),
+        });
       }
 
-      handleCloseOverlay()
+      handleCloseOverlay();
 
       // Print after closing
       if (order) {
         if (printOrderTicket) {
-          printOrder({ order, newItems: changedItemsForTicketPrint, options: { shouldCallFallback: true } })
+          printOrder({
+            order,
+            newItems: changedItemsForTicketPrint,
+            options: { shouldCallFallback: true },
+          });
         }
         if (printTicket) {
-          printOrder({ order, template: 'ticket', newItems: changedItemsForTicketPrint })
+          printOrder({
+            order,
+            template: "ticket",
+            newItems: changedItemsForTicketPrint,
+          });
         }
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const handleDeleteItem = (id: string) => {
-    removeOrderItem({ orderId: selectedClient.orderId, itemId: id })
-    handleCloseOverlay()
-  }
+    removeOrderItem({ orderId: selectedClient.orderId, itemId: id });
+    handleCloseOverlay();
+  };
 
   return (
     <div className="pt-4 relative h-full flex flex-col">
-      <Button className="absolute top-0 right-0 mt-2 mr-2 border border-gray-500" variant="ghost" size="sm" onClick={handleCloseOverlay}>
+      <Button
+        className="absolute top-0 right-0 mt-2 mr-2 border border-gray-500"
+        variant="ghost"
+        size="sm"
+        onClick={handleCloseOverlay}
+      >
         <X className="h-5 w-5" />
       </Button>
       <div className="p-4 pt-0 border-b bg-muted">
         <h2 className="text-xl font-bold">{selectedClient.name}</h2>
+        <p className="text-sm text-muted-foreground">{selectedClient.phone}</p>
         <p className="text-sm text-muted-foreground">
-          {selectedClient.phone}
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Itens no carrinho: {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
+          Itens no carrinho:{" "}
+          {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
         </p>
       </div>
 
@@ -109,7 +130,9 @@ export default function CartSummary() {
       <div className="p-4 py-2">
         <div className="flex justify-between items-center mb-4">
           <span className="font-medium">Valor total</span>
-          <span className="text-xl font-bold">{formatToBRL(getTotalPrice())}</span>
+          <span className="text-xl font-bold">
+            {formatToBRL(getTotalPrice())}
+          </span>
         </div>
         <Button
           className="w-full"
@@ -127,20 +150,29 @@ export default function CartSummary() {
         />
       </div>
     </div>
-  )
+  );
 }
 
-export const CartItens = ({ onDeleteItem }: { onDeleteItem?: (id: string) => void }) => {
-  const { cartItems, getNewQuantityForProduct, decreaseQuantity, increaseQuantity, removeFromCart } = useSalesStore()
+export const CartItens = ({
+  onDeleteItem,
+}: {
+  onDeleteItem?: (id: string) => void;
+}) => {
+  const {
+    cartItems,
+    getNewQuantityForProduct,
+    decreaseQuantity,
+    increaseQuantity,
+    removeFromCart,
+  } = useSalesStore();
 
   const handleDeleteItem = (item: CartItem) => {
     if (onDeleteItem) {
-      onDeleteItem(item.id!)
+      onDeleteItem(item.id!);
     } else {
-      removeFromCart(item.product.id)
+      removeFromCart(item.product.id);
     }
-  }
-
+  };
 
   return (
     <>
@@ -154,20 +186,28 @@ export const CartItens = ({ onDeleteItem }: { onDeleteItem?: (id: string) => voi
         <ScrollArea className="flex-1">
           <div className="p-2 space-y-4">
             {cartItems.map((item) => {
-              const newQuantity = getNewQuantityForProduct(item.product.id)
-              const hasNewQuantity = newQuantity > 0
+              const newQuantity = getNewQuantityForProduct(item.product.id);
+              const hasNewQuantity = newQuantity > 0;
 
-              const shouldShowDeleteButton = onDeleteItem ? !hasNewQuantity : true
+              const shouldShowDeleteButton = onDeleteItem
+                ? !hasNewQuantity
+                : true;
 
               return (
                 <div key={item.product.id} className="space-y-1">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-medium max-w-[170px] truncate">{item.product.name}</h3>
-                      <p className="text-sm text-muted-foreground">{formatToBRL(item.product.price)} cada</p>
+                      <h3 className="font-medium max-w-[170px] truncate">
+                        {item.product.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {formatToBRL(item.product.price)} cada
+                      </p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold">{formatToBRL(item.product.price * item.quantity)}</p>
+                      <p className="font-bold">
+                        {formatToBRL(item.product.price * item.quantity)}
+                      </p>
                     </div>
                   </div>
 
@@ -207,11 +247,11 @@ export const CartItens = ({ onDeleteItem }: { onDeleteItem?: (id: string) => voi
                   </div>
                   <Separator />
                 </div>
-              )
+              );
             })}
           </div>
         </ScrollArea>
       )}
     </>
-  )
-}
+  );
+};

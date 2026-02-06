@@ -1,4 +1,4 @@
-import { BarChart, Package, ShoppingBag, ShoppingCart } from "lucide-react";
+import { BarChart, FileText, Package, ShoppingBag, ShoppingCart } from "lucide-react";
 
 interface Route {
     label: string
@@ -22,6 +22,11 @@ export const routes: Route[] = [
         label: "Estoque",
         href: "/stock",
         icon: Package,
+    },
+    {
+        label: "Financeiro",
+        href: "/financeiro",
+        icon: FileText,
     },
     {
         label: "Relatórios",
