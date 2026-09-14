@@ -1,10 +1,11 @@
 const PRINTER_SERVICE_URL = 'http://localhost:5151';
 const PRINTER_ID_KEY = 'selected_printer_id';
 
-interface Printer {
+interface ConfiguredPrinter {
     id: string;
-    name: string;
-    status: string;
+    systemPrinter: string;
+    customName: string;
+    isOnline?: boolean;
 }
 
 interface PrintRequest {
@@ -48,7 +49,7 @@ export class PrinterService {
     /**
      * Get list of configured printers from the local service
      */
-    static async getConfiguredPrinters(): Promise<Printer[]> {
+    static async getConfiguredPrinters(): Promise<ConfiguredPrinter[]> {
         try {
             const response = await fetch(`${PRINTER_SERVICE_URL}/api/printers/configured`, {
                 signal: AbortSignal.timeout(5000), // 5 second timeout
@@ -56,9 +57,8 @@ export class PrinterService {
             if (!response.ok) {
                 throw new Error(`Failed to get printers: ${response.statusText}`);
             }
-            const printers = await response.json().then(data => data.printers);
-
-            return printers;
+            const data = await response.json();
+            return data.printers ?? [];
         } catch (error) {
             console.error('Error getting configured printers:', error);
             throw error;
@@ -69,23 +69,25 @@ export class PrinterService {
      * Get the selected printer ID from localStorage or fetch and set the first available
      */
     static async getSelectedPrinterId(): Promise<string> {
-        // Try to get from localStorage first
-        const storedPrinterId = localStorage.getItem(PRINTER_ID_KEY);
-        if (storedPrinterId) {
-            return storedPrinterId;
-        }
-
-        // If not found, fetch printers and use the first one
         try {
             const printers = await this.getConfiguredPrinters();
-            console.log('printers', printers);
             if (printers.length === 0) {
                 throw new Error('No printers configured');
             }
 
-            const firstPrinterId = printers[0].id;
-            this.setSelectedPrinterId(firstPrinterId);
-            return firstPrinterId;
+            const storedPrinterId = localStorage.getItem(PRINTER_ID_KEY);
+            const storedPrinter = storedPrinterId
+                ? printers.find((printer) => printer.id === storedPrinterId)
+                : undefined;
+
+            if (storedPrinter) {
+                return storedPrinter.id;
+            }
+
+            const onlinePrinter = printers.find((printer) => printer.isOnline !== false);
+            const selectedPrinterId = (onlinePrinter ?? printers[0]).id;
+            this.setSelectedPrinterId(selectedPrinterId);
+            return selectedPrinterId;
         } catch (error) {
             console.error('Error getting selected printer ID:', error);
             throw error;
@@ -145,9 +147,17 @@ export class PrinterService {
                 signal: AbortSignal.timeout(10000), // 10 second timeout
             });
 
+            const responseBody = await response.json().catch(() => null);
+
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Print failed: ${response.statusText} - ${errorText}`);
+                const errorMessage = responseBody?.error
+                    || responseBody?.result?.error
+                    || response.statusText;
+                throw new Error(`Print failed: ${errorMessage}`);
+            }
+
+            if (responseBody?.success === false || responseBody?.result?.success === false) {
+                throw new Error(responseBody?.error || responseBody?.result?.error || 'Print failed');
             }
 
             console.log('Print sent successfully');
